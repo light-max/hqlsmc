@@ -1,0 +1,138 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>戒烟网站后台管理系统</title>
+
+    <link rel="stylesheet" href="/webjars/bootstrap/4.5.0/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/admin.css">
+
+    <script src="/webjars/jquery/3.5.1/jquery.js"></script>
+    <script src="/webjars/bootstrap/4.5.0/js/bootstrap.js"></script>
+    <script src="/js/net.js"></script>
+
+    <style>
+        .item {
+            display: flex;
+            flex-direction: column;
+            border-radius: 8px;
+            border: solid 1px gray;
+            padding: 12px;
+            gap: 6px;
+            width: 560px;
+        }
+
+        .title {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .time {
+            color: gray;
+            font-size: 14px;
+        }
+
+        .content {
+            font-size: 14px;
+        }
+
+        .bottom {
+            display: flex;
+            flex-direction: row;
+            font-size: 14px;
+            color: gray;
+            gap: 12px;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            if ('[[${sort}]]' != '') {
+                $("option[value='[[${sort}]]']").prop("selected", true)
+            }
+        })
+
+        function query() {
+            var title = $("#title").val()
+            var userId = $("#userId").val()
+            var sort = $("#sort").val()
+            var t = ""
+            if (title != '' || userId != '' || sort != '') {
+                t = "?";
+                if (title != '') {
+                    t += "title=" + title + "&";
+                }
+                if (userId != '') {
+                    t += "userId=" + userId + "&";
+                }
+                if (sort != '') {
+                    t += "sort=" + sort + "&";
+                }
+                t = t.substr(0, t.length - 1);
+            }
+            window.location.href = "/admin/post" + t
+        }
+    </script>
+</head>
+<body>
+
+<div th:replace="common/admin::navbar"></div>
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="common/admin::sidebarMenu"></div>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">帖子列表</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="form-check form-check-inline">
+                        <div class="font-weight-bold">帖子标题：</div>
+                        <input class="form-control-sm" type="text" placeholder="请输入查询关键字" id="title"
+                               th:value="${title}">
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <div class="font-weight-bold">楼主ID：</div>
+                        <input class="form-control-sm" type="number" placeholder="请输入楼主ID" id="userId"
+                               th:value="${userId}">
+                    </div>
+                    <select id="sort">
+                        <option value="">选择排序方式</option>
+                        <option value="desc">按时间降序</option>
+                        <option value="asc">按时间升序</option>
+                    </select>
+                    &nbsp;&nbsp;
+                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="query()">查询
+                    </button>
+                    &nbsp;&nbsp;
+                    <button type="button" class="btn btn-sm btn-outline-primary"
+                            onclick="window.location.href='/admin/post'">重置
+                    </button>
+                </div>
+            </div>
+            <div style="display: flex;flex-direction: row;flex-wrap: wrap;width: 1200px;gap: 12px">
+                <div class="item" th:each="post:${list}">
+                    <a th:href="'/admin/post/edit/'+${post.id}" target="_blank">
+                        <div class="title text-truncate" th:text="${post.title}"></div>
+                    </a>
+                    <div class="time" th:text="${post.time}"></div>
+                    <div class="content text-truncate" th:text="${post.content}"></div>
+                    <div class="bottom">
+                        <div>[[${post.likeCount}]]点赞</div>
+                        <div>[[${post.replyCount}]]回帖</div>
+                        <div th:if="${post.images.urls.size()>0}">
+                            [[${post.images.urls.size()}]]图片
+                        </div>
+                        <div style="flex-grow: 1"></div>
+                        <div>楼主: <a th:href="'/space/posts/'+${post.userId}" th:text="${post.nickname}"
+                                    target="_blank"></a></div>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-top: 8px">
+                <div th:replace="common/admin::page"></div>
+            </div>
+            <br><br><br>
+        </main>
+    </div>
+</div>
+</body>
+</html>

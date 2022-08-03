@@ -1,0 +1,159 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>戒烟网站后台管理系统</title>
+
+    <link rel="stylesheet" href="/webjars/bootstrap/4.5.0/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/admin.css">
+
+    <script src="/webjars/jquery/3.5.1/jquery.js"></script>
+    <script src="/webjars/bootstrap/4.5.0/js/bootstrap.js"></script>
+    <script src="/js/net.js"></script>
+
+    <style>
+        .list {
+            display: flex;
+            gap: 24px;
+            flex-direction: column;
+            width: 640px;
+        }
+
+        .item {
+            display: flex;
+            border: 1px solid gray;
+            border-radius: 12px;
+            flex-direction: column;
+            box-sizing: border-box;
+            padding: 16px;
+        }
+
+        .top {
+            font-weight: bold;
+            color: #007bff;
+            font-size: 20px;
+        }
+
+        .title {
+            font-weight: bold;
+            font-size: 20px;
+            flex-grow: 1;
+        }
+
+        .content {
+            font-size: 14px;
+            white-space: normal;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            -webkit-line-clamp: 2;
+        }
+
+        .item-top {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-end;
+        }
+
+        .item-bottom {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .time {
+            flex-grow: 1;
+            color: gray;
+            font-size: 13px;
+        }
+
+        .edit {
+            color: #007bff;
+            cursor: pointer;
+            padding-left: 12px;
+            padding-right: 12px;
+            font-weight: bold;
+        }
+
+        .delete {
+            color: #dc3545;
+            cursor: pointer;
+            padding-left: 12px;
+            padding-right: 12px;
+            font-weight: bold;
+        }
+
+        hr {
+            color: gray;
+            width: 100%;
+            margin-top: 8px;
+            margin-bottom: 8px;
+        }
+    </style>
+
+    <script>
+        function select(obj) {
+            window.location.href = "/admin/notice?type=" + $(obj).val()
+        }
+
+        function deleteNotice(noticeId) {
+            if (confirm("你确定要删除这条公告?")) {
+                net.delete({
+                    url: "/admin/notice/delete/" + noticeId,
+                    reload: true,
+                    toast: true
+                })
+            }
+        }
+
+        $(document).ready(function () {
+            $("#select").val('[[${type}]]')
+        })
+    </script>
+</head>
+<body>
+
+<div th:replace="common/admin::navbar"></div>
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="common/admin::sidebarMenu"></div>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">公告列表</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <select onchange="select(this)" id="select">
+                        <option value="all">全部公告</option>
+                        <option value="notop">一般公告</option>
+                        <option value="top">置顶公告</option>
+                    </select>
+                    &nbsp;&nbsp;
+                    <button type="button" class="btn btn-sm btn-outline-primary"
+                            onclick="window.location.href='/admin/notice/add'">添加公告
+                    </button>
+                </div>
+            </div>
+            <div class="list">
+                <div class="item" th:each="notice:${list}">
+                    <div class="item-top">
+                        <div class="title" th:text="${notice.tittle}"></div>
+                        <div class="top" th:if="${notice.isTop()}">已置顶</div>
+                    </div>
+                    <hr>
+                    <div class="content" th:text="${notice.des}"></div>
+                    <hr>
+                    <div class="item-bottom">
+                        <div class="time" th:text="${notice.translateDate()}"></div>
+                        <a class="edit" th:href="'/admin/notice/update/'+${notice.id}">编辑</a>
+                        <a class="delete" href="#" th:onclick="'deleteNotice('+${notice.id}+')'">删除</a>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-top: 8px">
+                <div th:replace="common/admin::page"></div>
+            </div>
+            <br><br><br>
+        </main>
+    </div>
+</div>
+
+</body>
+</html>

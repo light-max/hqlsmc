@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>登陆</title>
+
+    <link rel="stylesheet" href="/webjars/bootstrap/4.5.0/css/bootstrap.css">
+
+    <script src="/webjars/jquery/3.5.1/jquery.js"></script>
+    <script src="/webjars/bootstrap/4.5.0/js/bootstrap.js"></script>
+    <script src="/js/net.js"></script>
+
+    <style>
+        main {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -40%);
+            border-radius: 8px;
+        }
+
+        form {
+            width: 400px;
+        }
+
+        body {
+            background: #eeeeee;
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+    <script>
+        function post() {
+            net.post({
+                url: "/user/api/login",
+                data: {
+                    username: $("#username").val(),
+                    password: $("#password").val()
+                },
+                toast: true,
+                success: function () {
+                    // alert("登录成功")
+                    window.location.href = "/user/home"
+                }
+            })
+        }
+    </script>
+</head>
+
+<body>
+<main>
+    <form class="shadow-lg p-3 mb-5 bg-white rounded" method="post">
+        <br>
+        <h2 class="text-center">用户登录</h2>
+        <hr class="my-4">
+        <div class="form-group">
+            <label for="username">用户名</label>
+            <input type="text" class="form-control form-group " placeholder="请输入用户名" id="username" th:value="${username}">
+        </div>
+        <div class="form-group">
+            <label for="password">登录密码</label>
+            <input type="password" class="form-control form-group " placeholder="请输入登录密码" id="password" th:value="${password}">
+        </div>
+        <div class="alert alert-danger text-center" role="alert" th:if="${error}!=null" th:text="${error}">
+        </div>
+        <input class="btn btn-dark btn-block" type="button" value="登录" onclick="post()">
+        <div style="text-align: end;margin-top: 8px">
+            <a href="/user/register" class="alert-link">没有账号，去注册</a>
+        </div>
+        <br>
+    </form>
+    <br>
+    <br>
+    <br>
+</main>
+</body>
+</html>

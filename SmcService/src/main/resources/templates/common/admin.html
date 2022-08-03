@@ -1,6 +1,6 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="zh">
 <nav th:fragment="navbar" class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-    <a class="navbar-brand col-md-3 col-lg-2 mr-0 px-3" href="/admin">食堂意见反馈系统-后勤管理</a>
+    <a class="navbar-brand col-md-3 col-lg-2 mr-0 px-3" href="/admin">戒烟网站-后台管理系统</a>
     <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-toggle="collapse"
             data-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -14,26 +14,44 @@
     </ul>
 </nav>
 
-<nav th:fragment="sidebarMenu" id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
+<nav th:fragment="sidebarMenu" id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
     <div class="sidebar-sticky pt-3">
         <ul class="nav flex-column mb-2">
             <li class="nav-item">
-                <a class="nav-link font-weight-bold text-light" th:classappend="${view=='complaint'?'active':''}"
-                   href="/admin/complaint">
-                    申诉管理
+                <a class="nav-link font-weight-bold text-dark" th:classappend="${view=='notice'?'active':''}"
+                   href="/admin/notice">
+                    公告管理
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link font-weight-bold text-light" th:classappend="${view=='account'?'active':''}"
-                   href="/admin/account">
-                    账号管理
+                <a class="nav-link font-weight-bold text-dark" th:classappend="${view=='user'?'active':''}"
+                   href="/admin/user">
+                    用户信息管理
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link font-weight-bold text-dark" th:classappend="${view=='post'?'active':''}"
+                   href="/admin/post">
+                    帖子管理
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link font-weight-bold text-dark" th:classappend="${view=='da'?'active':''}"
+                   href="/admin/da">
+                    打卡信息管理
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link font-weight-bold text-dark" th:classappend="${view=='password'?'active':''}"
+                   href="/admin/password">
+                    修改管理员密码
                 </a>
             </li>
         </ul>
     </div>
 </nav>
 
-<!--/*@thymesVar id="pager" type="com.pyk.canteen.model.data.Pager"*/-->
+<!--/*@thymesVar id="pager" type="com.hql.scm.model.data.Pager"*/-->
 <nav th:fragment="page" aria-label="Page navigation example" th:if="${pager}!=null">
     <ul class="pagination" th:if="${pager.pageCount>1}">
         <li class="page-item" th:if="${pager.currentPage!=1}">

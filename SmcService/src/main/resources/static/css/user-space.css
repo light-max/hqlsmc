@@ -1,0 +1,135 @@
+body {
+    background: #eeeeee;
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+main {
+    width: 640px;
+}
+
+.uinfo {
+    padding-top: 24px;
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-bottom: 12px;
+    width: 640px;
+    background: white;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: grid;
+    grid-template-areas: "head username username . follow" "head nickname gender . ." "head des des des des" "home data data data data" ". . . . .";
+    grid-template-columns: auto auto auto 1fr auto;
+    grid-column-gap: 12px;
+    grid-row-gap: 2px;
+    grid-template-rows: auto auto auto 1fr;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    border-bottom: 1px solid gray;
+}
+
+.head {
+    grid-area: head;
+}
+
+.username {
+    grid-area: username;
+    font-size: 14px;
+    color: gray;
+}
+
+.nickname {
+    grid-area: nickname;
+    font-size: 16px;
+    color: #393939;
+}
+
+.gender {
+    grid-area: gender;
+}
+
+.gender > img {
+    width: 24px;
+    height: 24px;
+}
+
+.des {
+    grid-area: des;
+    font-size: 12px;
+    color: gray;
+}
+
+.head-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 40px;
+    object-fit: cover;
+    border: 1px solid gray;
+}
+
+.home {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-end;
+    grid-area: home;
+    color: #393939;
+    text-decoration: none;
+}
+
+.follow {
+    grid-area: follow;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.data {
+    grid-area: data;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.data > a {
+    text-decoration: none;
+}
+
+.data-item {
+    margin-top: 2px;
+    width: 140px;
+    text-align: center;
+}
+
+.data-value {
+    font-size: 14px;
+    color: #393939;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.data-value:hover {
+    color: #007bff;
+}
+
+.data-lab {
+    font-size: 12px;
+    color: gray;
+}
+
+.active {
+    font-weight: bold;
+    color: #007bff;
+}
+
+.list-parent {
+    margin-bottom: 48px;
+    margin-top: 8px;
+    z-index: 0;
+    background: white;
+    border-radius: 8px;
+    padding: 8px;
+}

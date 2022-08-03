@@ -1,0 +1,194 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>戒烟网站</title>
+
+    <link rel="stylesheet" href="/webjars/bootstrap/4.5.0/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/user-home.css">
+
+    <script src="/webjars/jquery/3.5.1/jquery.js"></script>
+    <script src="/webjars/bootstrap/4.5.0/js/bootstrap.js"></script>
+    <script src="/js/net.js"></script>
+    <style>
+        body {
+            margin: 0;
+            background: #eeeeee;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+        }
+
+        main {
+            margin-top: 8px;
+            margin-bottom: 80px;
+            padding: 8px;
+            border-radius: 8px;
+            background: white;
+            width: 640px;
+        }
+
+        hr {
+            margin-top: 4px;
+            margin-bottom: 4px;
+        }
+
+        .item {
+            margin: 18px 24px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+
+        .lab {
+            width: 100px;
+            font-weight: bold;
+        }
+
+        .value-width {
+            flex-grow: 1;
+        }
+
+        #images {
+            margin-top: 8px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            justify-items: center;
+            row-gap: 8px;
+        }
+
+        .images-toolbar {
+            display: flex;
+            flex-direction: row;
+            margin-left: 28px;
+            margin-top: 16px;
+            align-items: center;
+            margin-bottom: 8px
+        }
+
+        .image {
+            border-radius: 4px;
+            border: solid 1px gray;
+            width: 200px;
+        }
+
+        .image > img {
+            width: 198px;
+            height: 198px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .image-dlt {
+            color: #d53232;
+            cursor: pointer;
+            text-align: center;
+            font-size: 14px;
+            line-height: 32px;
+        }
+    </style>
+    <script>
+        function saveEdit() {
+            net.post({
+                url: "/admin/post/edit/[[${post.id}]]",
+                data: {
+                    title: $("#title").val(),
+                    content: $("#content").val()
+                },
+                toast: true,
+                success: function () {
+                    alert("修改成功")
+                }
+            })
+        }
+
+        function deletePost() {
+            if (confirm("你确定要删除这篇帖子吗?")) {
+                net.delete({
+                    url: "/admin/post/delete/[[${post.id}]]",
+                    toast: true,
+                    success: function () {
+                        alert("删除成功");
+                        window.close()
+                    }
+                })
+            }
+        }
+
+        function deleteImage(btn) {
+            if (confirm("你确定要删除这张图片吗?")) {
+                var url = $(btn).parent().children(0).attr("src")
+                net.delete({
+                    url: url,
+                    toast: true,
+                    success: function () {
+                        $(btn).parent().remove();
+                    }
+                })
+            }
+        }
+
+        $(document).ready(function () {
+            $("#file").on("change", function () {
+                var form = new FormData();
+                form.append("file", document.getElementById("file").files[0], $("#file").val());
+
+                var settings = {
+                    "url": "/admin/mainpost/image/[[${post.id}]]",
+                    "method": "POST",
+                    "dataType": "json",
+                    "timeout": 0,
+                    "processData": false,
+                    "mimeType": "multipart/form-data",
+                    "contentType": false,
+                    "data": form
+                };
+
+                $.ajax(settings).done(function (result) {
+                    if (result.success) {
+                        window.location.reload()
+                    } else {
+                        alert(result.message);
+                    }
+                });
+            })
+        })
+
+
+    </script>
+</head>
+<body>
+<main>
+    <div style="margin-top: 4px;padding: 8px;display: flex;flex-direction: row">
+        <span>编辑帖子</span>
+        <span style="flex-grow: 1"></span>
+        <span style="cursor: pointer" class="text-danger" onclick="deletePost()">删帖</span>
+    </div>
+    <hr/>
+    <div class="item">
+        <div class="lab">帖子标题</div>
+        <input class="form-control value-width" type="text"
+               placeholder="给帖子取一个标题吧" id="title" th:value="${post.title}">
+    </div>
+    <div class="item">
+        <div class="lab">帖子内容</div>
+        <textarea rows="8" class="form-control value-width" placeholder="帖子的内容"
+                  id="content" th:text="${post.content}"></textarea>
+    </div>
+    <button class="btn btn-primary form-control" onclick="saveEdit()">保存内容修改</button>
+    <hr>
+    <hr>
+    <div class="images-toolbar">
+        <div>帖子图片</div>
+        <input hidden type="file" id="file" accept="image/*">
+        <button style="margin-left: 24px" onclick="$('#file').click()">添加</button>
+    </div>
+    <div id="images">
+        <div class="image" th:each="url:${post.images.urls}">
+            <img th:src="${url}">
+            <div class="image-dlt" onclick="deleteImage(this)">删除</div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

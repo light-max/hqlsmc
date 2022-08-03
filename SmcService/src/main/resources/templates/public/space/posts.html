@@ -1,0 +1,179 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>戒烟网站</title>
+
+    <link rel="stylesheet" href="/webjars/bootstrap/4.5.0/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/user-space.css">
+
+    <script src="/webjars/jquery/3.5.1/jquery.js"></script>
+    <script src="/webjars/bootstrap/4.5.0/js/bootstrap.js"></script>
+    <script src="/js/net.js"></script>
+    <style>
+        #list {
+
+        }
+
+        .item {
+            padding: 12px 16px;
+        }
+
+        #list > hr {
+            margin: 0;
+        }
+
+        .title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .title > a {
+            text-decoration: none;
+            color: #393939;
+        }
+
+        .content {
+            margin-top: 12px;
+            display: flex;
+            flex-direction: row;
+            column-gap: 12px;
+        }
+
+        .content-img {
+            width: 190px;
+            height: 108px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .content-text {
+            font-size: 15px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 5;
+        }
+
+        .toolbar {
+            margin-top: 12px;
+            display: flex;
+            flex-direction: row;
+            grid-column-gap: 24px;
+            align-items: center;
+        }
+    </style>
+    <script>
+        function like(id, obj) {
+            net.post({
+                url: "/user/like/mainpost",
+                data: {
+                    targetId: id
+                },
+                toast: true,
+                success: function (data) {
+                    $(obj).removeClass("btn-primary btn-outline-primary")
+                    if (data['like']) {
+                        $(obj).addClass("btn-primary")
+                        $(obj).html(`已点赞&nbsp;&nbsp;${data['count']}`)
+                    } else {
+                        $(obj).addClass("btn-outline-primary")
+                        $(obj).html(`点赞&nbsp;&nbsp;${data['count']}`)
+                    }
+                }
+            })
+        }
+
+        function deleteMainPost(id, obj) {
+            if (confirm("你确定要删除此帖?")) {
+                net.delete({
+                    url: "/user/mainpost/" + id,
+                    toast: true,
+                    success: function () {
+                        $(obj).parent().parent().remove()
+                    }
+                })
+            }
+        }
+
+        var userId = [[${user.id}]]
+        var isMe = [[${isMe}]]
+
+        var page = null
+
+        function getImage(images) {
+            if (images != null) {
+                var urls = images['urls'];
+                if (urls != null && urls.length > 0) {
+                    return `<img class="content-img" src="${urls[0]}">`;
+                }
+            }
+            return '';
+        }
+
+        function getDeleteBtn(id) {
+            if (!isMe) return ''
+            return `<div style="flex-grow: 1"></div>
+                <button class="btn btn-outline-danger" onclick="deleteMainPost(${id},this)">删帖</button>`
+        }
+
+        function requestSuccess(p) {
+            page = p['pager'];
+            p['data'].forEach((item) => {
+                $("#list").append(`<div class="item">
+    <div class="title">
+        <a target="_blank" href="/mainpost/details/view/${item['id']}">${item['title']}</a>
+    </div>
+    <div class="content">
+        ${getImage(item['images'])}
+        <div class="content-text">${item['content']}</div>
+    </div>
+    <div class="toolbar">
+        <button class="btn ${item['like'] ? 'btn-primary' : 'btn-outline-primary'}"
+            onclick="like(${item['id']},this)">
+            ${item['like'] ? '已点赞' : '点赞'}&nbsp;&nbsp;${item['likeCount']}
+        </button>
+        <a target="_blank" class="text-primary" href="/mainpost/details/view/${item['id']}">${item['replyCount']}次回帖</a>
+        ${getDeleteBtn(item['id'])}
+    </div>
+</div><hr>`)
+            })
+        }
+
+        function loadMore() {
+            if (page == null || page['currentPage'] >= page['pageCount']) {
+                alert("没有更多内容了")
+            } else {
+                net.get({
+                    url: `/mainpost/list/${page['currentPage'] + 1}?userId=${userId}`,
+                    toast: true,
+                    success: function (p) {
+                        requestSuccess(p)
+                    }
+                })
+            }
+        }
+
+        $(document).ready(function () {
+            net.get({
+                url: "/mainpost/list/1?userId=" + userId,
+                toast: true,
+                success: function (p) {
+                    requestSuccess(p)
+                }
+            })
+        })
+    </script>
+</head>
+<body>
+<main>
+    <div th:replace="public/space/uinfo::uinfo"></div>
+    <div class="list-parent">
+        <div id="list"></div>
+        <div style="cursor: pointer;margin-top: 12px;margin-bottom: 16px" class="text-center text-primary"
+             onclick="loadMore()">加载更多
+        </div>
+    </div>
+</main>
+</body>
+</html>

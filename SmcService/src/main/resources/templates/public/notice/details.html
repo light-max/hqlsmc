@@ -1,0 +1,78 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>戒烟网站</title>
+
+    <link rel="stylesheet" href="/webjars/bootstrap/4.5.0/css/bootstrap.css">
+
+    <script src="/webjars/jquery/3.5.1/jquery.js"></script>
+    <script src="/webjars/bootstrap/4.5.0/js/bootstrap.js"></script>
+    <script src="/js/net.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #eeeeee;
+        }
+
+        .notice-layout {
+            width: 720px;
+            min-height: 80vh;
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 8px;
+        }
+
+        .title {
+            margin-top: 24px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 24px;
+        }
+
+        .time {
+            line-height: 40px;
+            font-size: 14px;
+            color: gray;
+            text-align: center;
+        }
+
+        .content {
+            line-height: 32px;
+            font-size: 16px;
+        }
+
+        img {
+            width: 100%;
+            object-fit: cover;
+            margin-top: 8px;
+        }
+    </style>
+    <script>
+    </script>
+</head>
+<body>
+<div th:if="${notice}==null">404，你访问的公告不存在</div>
+<div class="notice-layout" th:if="${notice}!=null">
+    <h6>通知内容</h6>
+    <hr style="margin-top: 8px;margin-bottom: 8px">
+    <div class="title" th:text="${notice.title}"></div>
+    <div class="time" th:text="${notice.time}"></div>
+    <div class="content" th:text="${notice.des}"></div>
+    <div th:if="${notice.hasImages}">
+        <hr style="margin-top: 16px;margin-bottom: 8px">
+        <div>图片附件：</div>
+        <div th:each="url:${notice.images.urls}">
+            <img th:src="${url}">
+        </div>
+    </div>
+</div>
+<div style="line-height: 32px;font-size: 14px;color: gray">没有内容了</div>
+<br>
+</body>
+</html>

@@ -1,6 +1,7 @@
 package com.hql.scm.util;
 
 import java.io.*;
+import java.util.Arrays;
 
 public class FileTools {
     public static File getFileMakePath(String parent, String name) {
@@ -16,6 +17,15 @@ public class FileTools {
             return new File(file, "0");
         } else {
             try {
+                Arrays.sort(files, (o1, o2) -> {
+                    try {
+                        int i1 = Integer.parseInt(o1.getName());
+                        int i2 = Integer.parseInt(o2.getName());
+                        return i1 - i2;
+                    } catch (Exception e) {
+                        return o1.compareTo(o2);
+                    }
+                });
                 File last = files[files.length - 1];
                 int lastId = Integer.parseInt(last.getName());
                 return new File(file, String.valueOf(lastId + 1));
@@ -32,10 +42,10 @@ public class FileTools {
         return new File(path, "video");
     }
 
-    public static File getHeadImagePath(String parent, String uid) {
+    public static File getHeadImagePath(String parent, Integer id) {
         File file = new File(parent);
         file.mkdirs();
-        return new File(parent, uid);
+        return new File(parent, String.valueOf(id));
     }
 
     public static File getImagePath(String parent, int id) {
@@ -56,5 +66,18 @@ public class FileTools {
         out.flush();
         in.close();
         out.close();
+    }
+
+    public static void deleteDir(File file) {
+        if (file.exists()) {
+            if (file.isFile()) {
+                file.delete();
+            } else {
+                File[] files = file.listFiles();
+                for (File path : files) {
+                    deleteDir(path);
+                }
+            }
+        }
     }
 }

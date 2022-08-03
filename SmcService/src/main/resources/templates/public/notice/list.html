@@ -1,0 +1,85 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>戒烟网站</title>
+
+    <link rel="stylesheet" href="/webjars/bootstrap/4.5.0/css/bootstrap.css">
+
+    <script src="/webjars/jquery/3.5.1/jquery.js"></script>
+    <!--    <script src="/webjars/bootstrap/4.5.0/js/bootstrap.js"></script>-->
+    <script src="/js/net.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            background: #eeeeee;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+        }
+
+        main {
+            width: 820px;
+            background: white;
+            padding: 12px;
+            margin: 8px;
+            border-radius: 8px;
+        }
+
+        .item {
+            line-height: 40px;
+            display: flex;
+            flex-direction: row;
+        }
+
+        .title {
+            color: #393939;
+            flex-grow: 1;
+            font-size: 16px;
+        }
+
+        .top:after {
+            margin-left: 8px;
+            color: #d53232;
+            content: "置顶";
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .time {
+            margin-right: 14px;
+            color: gray;
+            font-size: 14px;
+        }
+    </style>
+
+    <script>
+    </script>
+</head>
+<body>
+<main>
+    <div style="margin-top: 4px">
+        <a href="/user/home">返回主页</a>
+        &nbsp;&nbsp;>&nbsp;
+        <span style="color: gray">公告列表</span>
+    </div>
+    <hr style="margin-top: 8px;margin-bottom: 8px;">
+    <ul>
+        <li th:each="notice:${list}">
+            <div class="item">
+                <a class="title" target="_blank"
+                   th:href="'/notice/details/'+${notice.id}"
+                   th:text="${notice.tittle}"
+                   th:classappend="${notice.isTop()?'top':''}">
+                </a>
+                <span class="time" th:text="${notice.translateDate()}"></span>
+            </div>
+        </li>
+    </ul>
+    <div style="margin-top: 8px;display:flex;justify-content: center">
+        <div th:replace="common/admin::page"></div>
+    </div>
+</main>
+</body>
+</html>

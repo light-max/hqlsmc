@@ -1,0 +1,77 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>戒烟网站后台管理系统</title>
+
+    <link rel="stylesheet" href="/webjars/bootstrap/4.5.0/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/admin.css">
+
+    <script src="/webjars/jquery/3.5.1/jquery.js"></script>
+    <script src="/webjars/bootstrap/4.5.0/js/bootstrap.js"></script>
+    <script src="/js/net.js"></script>
+
+    <style>
+        .left {
+            width: 100%;
+        }
+
+        .right {
+            width: 100%;
+        }
+    </style>
+
+    <script>
+        function post() {
+            net.post({
+                url: "/admin/notice/add",
+                data: {
+                    title: $("#title").val(),
+                    des: $("#des").val(),
+                    top: $("#top").prop("checked")
+                },
+                toast: true,
+                success: function (notice) {
+                    window.location.href = "/admin/notice/update/" + notice['id']
+                }
+            })
+        }
+    </script>
+</head>
+<body>
+
+<div th:replace="common/admin::navbar"></div>
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="common/admin::sidebarMenu"></div>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">添加公告</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                </div>
+            </div>
+            <div style="display: flex;gap: 24px">
+                <div class="left">
+                    <div class="form-group">
+                        <label for="title">公告标题</label>
+                        <input type="text" class="form-control" id="title" placeholder="请输入公告标题">
+                    </div>
+                    <div class="form-group">
+                        <label for="des">公告内容</label>
+                        <textarea rows="6" type="text" class="form-control" id="des"
+                                  placeholder="请输入公告内容，1000字以内"></textarea>
+                    </div>
+                    <div class="form-group form-check">
+                        <input type="checkbox" class="form-check-input" id="top">
+                        <label class="form-check-label" for="top">公告置顶</label>
+                    </div>
+                    <button class="form-control btn btn-primary" onclick="post()">提交</button>
+                </div>
+                <div class="right"></div>
+            </div>
+        </main>
+    </div>
+</div>
+
+</body>
+</html>

@@ -22,11 +22,11 @@ spring:
           content:
             paths: /**
             enabled: true
-#file:
-#  images:
-#    stall: G:/canteen/images/stalls
-#    dish: G:/canteen/images/dish
-#    opinion: G:/canteen/images/opinion
-#    head: G:/canteen/userhead
-#  video:
-#    opinion: G:/canteen/videos/opinion
+file:
+  images:
+    notice: G:/smc/images/notice
+    head: G:/smc/userhead
+    draft: G:/smc/temp/draft
+    mainpost: G:/smc/images/mainpost
+    post: G:/smc/images/post
+  video:

@@ -1,0 +1,200 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>戒烟网站</title>
+
+    <link rel="stylesheet" href="/webjars/bootstrap/4.5.0/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/user-home.css">
+
+    <script src="/webjars/jquery/3.5.1/jquery.js"></script>
+    <script src="/webjars/bootstrap/4.5.0/js/bootstrap.js"></script>
+    <script src="/js/net.js"></script>
+    <style>
+        body {
+            margin: 0;
+            background: #eeeeee;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+        }
+
+        main {
+            margin-top: 8px;
+            margin-bottom: 80px;
+            padding: 8px;
+            border-radius: 8px;
+            background: white;
+            width: 640px;
+        }
+
+        hr {
+            margin-top: 4px;
+            margin-bottom: 4px;
+        }
+
+        .item {
+            margin: 18px 24px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+
+        .lab {
+            width: 100px;
+            font-weight: bold;
+        }
+
+        .value-width {
+            flex-grow: 1;
+        }
+
+        #user-list {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .user-item {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-head {
+            width: 48px;
+            height: 48px;
+            border-radius: 24px;
+            object-fit: cover;
+        }
+
+        .user-nickname {
+            font-size: 14px;
+            color: #393939;
+            font-weight: bold;
+            flex-grow: 1;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .user-select {
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        function postDA() {
+            var reviewId = $("#reviewId").val()
+            if (reviewId == null || reviewId == '') {
+                alert("请选择一名监督人")
+            } else {
+                net.post({
+                    url: "/user/da/submit",
+                    data: {
+                        reviewId: reviewId,
+                        des: $("#des").val()
+                    },
+                    toast: true,
+                    success: function () {
+                        alert("打卡任务添加成功, 请等待审核人审核");
+                        window.history.back()
+                    }
+                })
+            }
+        }
+
+        function selectUser(userId, nickname) {
+            $("#reviewId").val(userId)
+            $("#reviewName").val(nickname)
+            $("#user").modal("toggle")
+        }
+
+        function selectReviewer() {
+            $("#user").modal("toggle")
+        }
+
+        function drawUserItem(user) {
+            $("#user-list").append(`<div class="user-item">
+    <img class="user-head" src="/head/${user['targetId']}"/>
+    <div class="user-nickname">${user['nickname']}</div>
+    <div class="text-primary user-select" onclick="selectUser(${user['targetId']},'${user['nickname']}')">选择</div>
+</div>`)
+        }
+
+        function drawUserList(p) {
+            var page = p['pager'];
+            if (page['size'] == 0) {
+                $("#user-list-more").html('没有更多内容了')
+            } else {
+                if (page['currentPage'] >= page['pageCount']) {
+                    $("#user-list-more").html('没有更多内容了')
+                } else {
+                    $("#user-list-more").html('点击加载更多')
+                }
+                currentPage = page['currentPage'] + 1
+                p['data'].forEach(item => {
+                    drawUserItem(item)
+                })
+            }
+        }
+
+        var currentPage = 1
+
+        $(document).ready(function () {
+            $("#user-list-more").on("click", function () {
+                net.get({
+                    url: "/user/follow/list/" + currentPage,
+                    toast: true,
+                    success: function (p) {
+                        drawUserList(p)
+                    }
+                })
+            })
+            $("#user-list-more").click()
+        })
+    </script>
+</head>
+<body>
+<main>
+    <div style="margin-top: 4px;padding: 8px">
+        <a href="/user/home">返回主页</a>
+        &nbsp;&nbsp;>&nbsp;
+        <span style="color: gray">戒烟打卡</span>
+    </div>
+    <hr/>
+    <div class="item">
+        <div class="lab">监督人</div>
+        <input style="cursor: pointer" class="form-control value-width" type="text"
+               placeholder="从关注列表中选择一个监督人" id="reviewName" readonly onclick="selectReviewer()">
+        <input hidden id="reviewId">
+    </div>
+    <hr>
+    <div class="item">
+        <div class="lab">内容</div>
+        <textarea rows="8" class="form-control value-width" placeholder="文字描述"
+                  id="des"></textarea>
+    </div>
+    <input style="margin-top: 8px" class="form-control btn-primary" type="button" value="打卡" onclick="postDA()">
+</main>
+</body>
+</html>
+<div class="modal fade" id="user" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">关注列表</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="max-height: 70vh;overflow: scroll">
+                <div id="user-list"></div>
+                <div class="text-primary text-center" style="cursor: pointer" id="user-list-more">加载更多</div>
+            </div>
+        </div>
+    </div>
+</div>

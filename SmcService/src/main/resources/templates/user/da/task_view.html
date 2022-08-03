@@ -1,0 +1,77 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>戒烟网站</title>
+
+    <link rel="stylesheet" href="/webjars/bootstrap/4.5.0/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/user-home.css">
+
+    <script src="/webjars/jquery/3.5.1/jquery.js"></script>
+    <script src="/webjars/bootstrap/4.5.0/js/bootstrap.js"></script>
+    <script src="/js/net.js"></script>
+    <style>
+        body {
+            margin: 0;
+            background: #eeeeee;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+        }
+
+        main {
+            margin-top: 8px;
+            margin-bottom: 80px;
+            padding: 8px;
+            border-radius: 8px;
+            background: white;
+            width: 520px;
+        }
+
+        hr {
+            margin-top: 4px;
+            margin-bottom: 4px;
+        }
+
+        a {
+            text-decoration: none;
+        }
+    </style>
+    <script>
+
+    </script>
+</head>
+<body>
+<main>
+    <div style="margin-top: 4px;padding: 8px;text-align: center;font-size: 20px">
+        <span>打卡详情</span>
+    </div>
+    <hr/>
+    <div th:if="${task.des.trim().length()>0}">
+        <textarea readonly class="form-control form-text" th:text="${task.des}"></textarea>
+        <hr>
+    </div>
+    <div style="display: flex;flex-direction: row;align-items: center;gap: 12px;margin-top: 8px;margin-bottom: 8px;margin-left: 4px">
+        <div style="color: gray;font-size: 14px">监督人</div>
+        <img style="width: 32px;height: 32px;border: 1px solid gray;border-radius: 16px"
+             th:src="'/head/'+${task.reviewId}"/>
+        <a th:href="'/space/posts/'+${task.reviewId}" th:text="${task.reviewNickname}" target="_blank"></a>
+    </div>
+    <div class="text-center h4" style="margin-top: 24px;margin-bottom: 24px">
+        <div class="task-state text-primary" th:if="${task.state==0}">待审核</div>
+        <div class="task-state text-success" th:if="${task.state==1}">打卡成功</div>
+        <div class="task-state text-danger" th:if="${task.state==2}">打卡失败</div>
+    </div>
+    <div style="margin-left: 4px;margin-top: 8px;margin-bottom: 8px">
+        打卡时间：[[${date_format.format(task.createTime,"yyyy/MM/dd HH:mm:ss")}]]
+    </div>
+    <div style="margin-left: 4px" th:if="${task.reviewMsg.trim().length()!=0}">
+        <div>审核信息</div>
+        <textarea readonly class="form-control form-text" th:text="${task.reviewMsg}"></textarea>
+    </div>
+    <div style="margin-left: 4px;margin-top: 8px;margin-bottom: 8px" th:if="${task.reviewTime!=0}">
+        审核时间：[[${date_format.format(task.reviewTime,"yyyy/MM/dd HH:mm:ss")}]]
+    </div>
+</main>
+</body>
+</html>

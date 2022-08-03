@@ -1,0 +1,175 @@
+body {
+    background: #eeeeee;
+    height: 100%;
+}
+
+a{
+    text-decoration: none;
+    color: unset;
+}
+
+.top {
+    position: fixed;
+    top: 0;
+}
+
+.navbar-layout {
+    height: 48px;
+    width: 100%;
+    background: white;
+    position: fixed;
+    top: 0;
+    z-index: 1;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    justify-items: center;
+    align-items: center;
+
+    /*see post-list-layout-parent is width of target*2*/
+    padding-right: 120px;
+}
+
+.fixed-layout {
+    width: 100%;
+    position: fixed;
+    top: 56px;
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    justify-content: center;
+    height: 100%;
+}
+
+.post-list-layout-parent {
+    transform: translateX(-50%);
+    left: 50%;
+    position: absolute;
+    top: 56px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 0;
+
+    /*see width of user-info-layout and width of notice-list-layout*/
+    margin-left: -60px;
+}
+
+.user-info-layout {
+    width: 240px;
+    height: max-content;
+    background: white;
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.notice-list-layout {
+    width: 360px;
+    background: white;
+    height: max-content;
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.post-list-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/*notice css*/
+.notice-btn {
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.notice-btn-active {
+    color: #007bff;
+}
+
+.notice-item {
+    margin-top: 8px;
+    margin-bottom: 8px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+}
+
+.notice-item > .date {
+    width: 60px;
+    text-align: center;
+    font-size: 18px;
+    font-style: italic;
+    background-color: #FFF;
+    color: #106292
+}
+
+.notice-item > .title {
+    text-align: left;
+    font-size: 14px;
+    color: #393939;
+    padding-left: 6px;
+}
+
+/**/
+
+/*user-info-layout*/
+.user-head-layout {
+    margin-top: 24px;
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.user-head-img {
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 28px
+}
+
+.user-username {
+    color: gray;
+    font-size: 14px;
+    line-height: 14px;
+    margin-bottom: 4px;
+}
+
+.user-nickname {
+    color: #393939;
+    font-size: 16px;
+    line-height: 16px;
+    margin-top: 4px;
+}
+
+.user-data-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.user-data-child {
+    text-align: center;
+}
+
+.user-data-child-value {
+    color: #393939;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.user-data-child-value:hover {
+    color: #007bff;
+}
+
+.user-data-child-lab {
+    color: gray;
+    font-size: 12px;
+    margin-top: 8px;
+}
+
+/*user-info-layout*/

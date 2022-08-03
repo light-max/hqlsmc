@@ -15,19 +15,20 @@
             /*transform: translate(-50%, -50%);*/
 
             position: absolute;
-            right: 20%;
+            left: 50%;
             top: 50%;
-            transform: translate(20%, -50%);
-            /*background: white;*/
+            transform: translate(-50%, -40%);
             border-radius: 8px;
         }
 
         form {
             width: 400px;
         }
-        body{
-            background: url("/images/login-bg.jpg");
-            background-size: cover;
+
+        body {
+            /*background: url("/images/login-bg.jpg");*/
+            /*background-size: cover;*/
+            background: #eeeeee;
             padding: 0;
             margin: 0;
         }
@@ -36,13 +37,16 @@
 
 <body>
 <main>
-    <form class="shadow-lg p-3 mb-5 bg-white rounded" method="post" th:action="${action}">
+    <form class="shadow-lg p-3 mb-5 bg-white rounded" method="post" action="/admin/login">
         <br><br>
-        <h1 class="display-4 text-center" th:text="${role}"></h1>
-        <p class="lead text-center">请登录</p>
+        <h2 class="text-center">戒烟网站系统</h2>
+        <h1 style="margin-top: 24px;margin-bottom: 24px" class="display-4 text-center">管理员</h1>
+        <p class="text-center">后台登录入口</p>
         <hr class="my-4">
-        <input type="text" class="form-control form-group text-center" placeholder="请输入用户名" th:value="${username}" name="username">
-        <input type="password" class="form-control form-group text-center" placeholder="请输入密码" th:value="${pwd}" name="pwd">
+        <input type="text" class="form-control form-group text-center" placeholder="请输入用户名" th:value="${username}"
+               name="username">
+        <input type="password" class="form-control form-group text-center" placeholder="请输入密码" th:value="${password}"
+               name="password">
         <div class="alert alert-danger text-center" role="alert" th:if="${error}!=null" th:text="${error}">
         </div>
         <input class="btn btn-dark btn-block" type="submit" value="登陆">

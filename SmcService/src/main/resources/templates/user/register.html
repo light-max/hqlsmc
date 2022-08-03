@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>登陆</title>
+
+    <link rel="stylesheet" href="/webjars/bootstrap/4.5.0/css/bootstrap.css">
+
+    <script src="/webjars/jquery/3.5.1/jquery.js"></script>
+    <script src="/webjars/bootstrap/4.5.0/js/bootstrap.js"></script>
+    <script src="/js/net.js"></script>
+
+    <style>
+        main {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 8px;
+        }
+
+        form {
+            width: 400px;
+        }
+
+        body {
+            background: #eeeeee;
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        function check() {
+
+        }
+
+        function post() {
+            if ($("#password").val() != $("#password2").val()) {
+                alert("两次输入的密码不一致")
+                return;
+            }
+            net.post({
+                url: "/user/api/register",
+                data: {
+                    username: $("#username").val(),
+                    password: $("#password").val(),
+                    gender: $("input[name=gender]").val(),
+                    birthday: $("#birthday").val().replaceAll("-", ""),
+                    email: $("#email").val()
+                },
+                toast: true,
+                success: function () {
+                    alert("注册成功去登录吧！");
+                    window.location.href = "/user/login";
+                }
+            })
+        }
+    </script>
+</head>
+
+<body>
+<main>
+    <form class="shadow-lg p-3 mb-5 bg-white rounded" method="post"
+          onsubmit="return check()">
+        <br>
+        <h2 class="text-center">新用户注册</h2>
+        <hr class="my-4">
+        <div class="form-group">
+            <label for="username">用户名</label>
+            <input type="text" class="form-control form-group " placeholder="请输入用户名" id="username">
+        </div>
+        <div class="form-group">
+            <label for="password">登录密码</label>
+            <input type="password" class="form-control form-group " placeholder="请输入登录密码" id="password">
+        </div>
+        <div class="form-group">
+            <label for="password2">确认密码</label>
+            <input type="password" class="form-control form-group " placeholder="请再次输入登录密码" id="password2">
+        </div>
+        <div class="form-group">
+            <label>性别：</label>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="gender" id="male" value="1" checked>
+                <label class="form-check-label" for="male">男</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="gender" id="female" value="2">
+                <label class="form-check-label" for="female">女</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="birthday">出生日期</label>
+            <input type="date" class="form-control form-group " id="birthday" value="2000-01-01">
+        </div>
+        <div class="form-group">
+            <label for="email">邮箱</label>
+            <input type="email" class="form-control form-group " placeholder="请输入邮箱" id="email">
+        </div>
+        <!--        <div class="alert alert-danger text-center" role="alert" th:if="${error}!=null" th:text="${error}">-->
+        <!--        </div>-->
+        <input class="btn btn-dark btn-block" type="button" value="注册" onclick="post()">
+        <div style="text-align: end;margin-top: 8px">
+            <a href="/user/login" class="alert-link">已经有账号，去登录</a>
+        </div>
+        <br>
+    </form>
+    <br>
+    <br>
+    <br>
+</main>
+</body>
+</html>

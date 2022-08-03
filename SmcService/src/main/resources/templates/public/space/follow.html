@@ -1,0 +1,161 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>戒烟网站</title>
+
+    <link rel="stylesheet" href="/webjars/bootstrap/4.5.0/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/user-space.css">
+
+    <script src="/webjars/jquery/3.5.1/jquery.js"></script>
+    <script src="/webjars/bootstrap/4.5.0/js/bootstrap.js"></script>
+    <script src="/js/net.js"></script>
+    <style>
+        .more {
+            cursor: pointer;
+            margin-top: 12px;
+            margin-bottom: 16px
+        }
+
+        .item {
+            margin-left: 12px;
+            margin-right: 12px;
+            margin-top: 6px;
+            margin-bottom: 18px;
+            display: flex;
+            flex-direction: row;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .item-head {
+            border: solid 1px gray;
+            width: 56px;
+            height: 56px;
+            border-radius: 28px;
+            object-fit: cover;
+        }
+
+        .item-info {
+            width: 0;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .item-info > a {
+            text-decoration: none;
+        }
+
+        .item-follow {
+            cursor: pointer;
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        .item-info-nickname {
+            font-weight: bold;
+            font-size: 15px;
+            color: #393939;
+        }
+
+        .item-info-des {
+            font-size: 13px;
+            color: gray;
+        }
+    </style>
+    <script>
+        var userId = [[${user.id}]]
+        var isMe = [[${isMe}]]
+        var nextPage = 1
+
+        function toggleFollowByTargetId(targetId) {
+            net.post({
+                url: "/user/follow/toggle",
+                data: {
+                    targetId: targetId
+                },
+                toast: true,
+                success: function (state) {
+                    $(`.item[targetid=${targetId}]`).find(".item-follow").html(getFollowText(state))
+                }
+            })
+        }
+
+        function getFollowText(state) {
+            if (state == null) {
+                return '关注'
+            } else {
+                if (state['friend']) {
+                    return '互相关注'
+                } else {
+                    if (state['follow']) {
+                        return '已关注'
+                    } else {
+                        return '关注'
+                    }
+                }
+            }
+        }
+
+        function drawItem(item) {
+            $("#list").append(`<div class="item" targetid="${item['targetId']}">
+    <img class="item-head" src="/head/${item['targetId']}"/>
+    <div class="item-info">
+        <a href="/space/posts/${item['targetId']}" target="_blank">
+            <div class="item-info-nickname">${item['nickname']}</div>
+        </a>
+        <div class="item-info-des text-truncate">${item['des']}</div>
+    </div>
+    <div class="item-follow" onclick="toggleFollowByTargetId(${item['targetId']})">
+        ${getFollowText(item['state'])}
+    </div>
+</div>`)
+        }
+
+        function drawList(p) {
+            var page = p['pager'];
+            if (page['size'] == 0) {
+                $(".more").html('没有更多了');
+            } else {
+                if (page['currentPage'] >= page['pageCount']) {
+                    $(".more").html('没有更多了');
+                } else {
+                    $(".more").html('加载更多');
+                }
+                nextPage = page['currentPage'] + 1;
+                p['data'].forEach(item => {
+                    drawItem(item)
+                })
+            }
+        }
+
+        $(document).ready(function () {
+            net.get({
+                url: "/follow/list?userId=[[${user.id}]]",
+                success: function (p) {
+                    drawList(p)
+                }
+            })
+            $(".more").on("click", function () {
+                net.get({
+                    url: `/follow/list/${nextPage}?userId=[[${user.id}]]`,
+                    success: function (p) {
+                        drawList(p)
+                    }
+                })
+            })
+        })
+    </script>
+</head>
+<body>
+<main>
+    <div th:replace="public/space/uinfo::uinfo"></div>
+    <div class="list-parent">
+        <div id="list"></div>
+        <div class="text-center text-primary more"></div>
+    </div>
+</main>
+</body>
+</html>

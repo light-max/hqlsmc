@@ -21,6 +21,11 @@ public enum GlobalConstant implements Assert {
     dataNotExists("数据不存在"),
 
     sourcePasswordError("原密码错误"),
+
+    followError("自己不能关注自己"),
+
+    dailyAttendanceError("今天已经打过卡了，不能重复打卡"),
+    dailyAttendanceError1("今日打卡进行中，请等待审核"),
     ;
 
     private String message;

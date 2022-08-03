@@ -1,0 +1,85 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<!--/*@thymesVar id="user" type="com.hql.scm.model.entity.User"*/-->
+<div th:fragment="uinfo" class="uinfo">
+    <div class="head">
+        <img class="head-img" th:src="'/head/'+${user.id}">
+    </div>
+    <div class="username" th:text="${user.username}"></div>
+    <div class="nickname" th:text="${user.nickname}"></div>
+    <div class="gender" th:if="${user.gender==1}">
+        <img src="/images/male.jpg"/>
+    </div>
+    <div class="gender" th:if="${user.gender==2}">
+        <img src="/images/female.jpg"/>
+    </div>
+    <div class="des" th:text="${user.des.isEmpty()?'这个人很懒，什么都没有写':user.des}"></div>
+    <a class="home" href="/user/home">回到主页</a>
+    <div class="text-primary follow"></div>
+    <div class="data">
+        <a th:href="${follow_href}">
+            <div class="data-item">
+                <div class="data-value" th:text="${follow_count}"></div>
+                <div class="data-lab follow-value" th:classappend="${view=='follow'?'active':''}">关注</div>
+            </div>
+        </a>
+        <a th:href="${follower_href}">
+            <div class="data-item">
+                <div class="data-value" th:text="${follower_count}"></div>
+                <div class="data-lab follower-value" th:classappend="${view=='follower'?'active':''}">粉丝</div>
+            </div>
+        </a>
+        <a th:href="${posts_href}">
+            <div class="data-item">
+                <div class="data-value" th:text="${post_count}"></div>
+                <div class="data-lab" th:classappend="${view=='posts'?'active':''}">帖子</div>
+            </div>
+        </a>
+    </div>
+    <script>
+        function getFollowState() {
+            net.get({
+                url: "/user/follow/check?targetId=[[${user.id}]]",
+                success: function (state) {
+                    if (state['friend']) {
+                        $(".follow").html('互相关注');
+                    } else {
+                        if (state['follow']) {
+                            $(".follow").html('已关注');
+                        } else {
+                            $(".follow").html('关注');
+                        }
+                    }
+                }
+            })
+        }
+
+        function toggleFollow() {
+            net.post({
+                url: "/user/follow/toggle",
+                data: {
+                    targetId: [[${user.id}]]
+                },
+                toast: true,
+                success: function (state) {
+                    if (state['friend']) {
+                        $(".follow").html('互相关注');
+                    } else {
+                        if (state['follow']) {
+                            $(".follow").html('已关注');
+                        } else {
+                            $(".follow").html('关注');
+                        }
+                    }
+                }
+            })
+        }
+
+        $(".uinfo").ready(function () {
+            getFollowState();
+            $(".follow").on("click", function () {
+                toggleFollow()
+            })
+        })
+    </script>
+</div>

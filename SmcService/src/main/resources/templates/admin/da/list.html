@@ -1,0 +1,265 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>戒烟网站后台管理系统</title>
+
+    <link rel="stylesheet" href="/webjars/bootstrap/4.5.0/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/admin.css">
+
+    <script src="/webjars/jquery/3.5.1/jquery.js"></script>
+    <script src="/webjars/bootstrap/4.5.0/js/bootstrap.js"></script>
+    <script src="/js/net.js"></script>
+
+    <style>
+        .item {
+            display: flex;
+            flex-direction: column;
+            border-radius: 8px;
+            border: solid 1px gray;
+            padding: 12px;
+            gap: 6px;
+            width: 560px;
+        }
+
+        .title {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .time {
+            color: gray;
+            font-size: 14px;
+        }
+
+        .content {
+            font-size: 14px;
+        }
+
+        .bottom {
+            display: flex;
+            flex-direction: row;
+            font-size: 14px;
+            color: gray;
+            gap: 12px;
+        }
+
+        .user-item {
+            margin-top: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            flex-direction: row;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .user-head {
+            width: 32px;
+            height: 32px;
+            border: 1px solid gray;
+            border-radius: 16px;
+        }
+
+        .user-item-center {
+            flex-grow: 1;
+            font-size: 14px;
+        }
+
+        .user-item-select {
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+    </style>
+
+    <script>
+        function query() {
+            var userId = $("#userId").val()
+            var sort = $("#sort").val()
+            var t = ""
+            if (userId != '' || sort != '') {
+                t = "?";
+                if (userId != '') {
+                    t += "userId=" + userId + "&";
+                }
+                if (sort != '') {
+                    t += "sort=" + sort + "&";
+                }
+                t = t.substr(0, t.length - 1);
+            }
+            window.location.href = "/admin/da" + t
+        }
+
+        function selectUser(id, nickname) {
+            $("#userId").val(id)
+            $("#username").val(nickname)
+            selectUserId()
+        }
+
+        function selectUserId() {
+            $("#usersDlg").modal("toggle")
+        }
+
+        var currentPage = 1
+        var searchKey = ""
+
+        function drawUserItem(item) {
+            $("#user-list").append(`<div class="user-item">
+    <img class="user-head" src="/head/${item['id']}"/>
+    <div class="user-item-center">
+        <div>${item['username']}</div>
+        <div>${item['nickname']}</div>
+    </div>
+    <div class="user-item-select text-primary" onclick="selectUser(${item['id']},'${item['nickname']}')">选择</div>
+</div>`)
+        }
+
+        $(document).ready(function () {
+            if ('[[${sort}]]' != '') {
+                $("option[value='[[${sort}]]']").prop("selected", true)
+            }
+            $("#user-list-more").on("click", function () {
+                net.get({
+                    url: `/admin/api/user/list/${currentPage}?w=${searchKey}`,
+                    success: function (p) {
+                        var page = p['pager'];
+                        if (page['size'] == 0) {
+                            $("#user-list-more").html('没有更多了')
+                        } else {
+                            if (page['currentPage'] >= page['pageCount']) {
+                                $("#user-list-more").html('没有更多了')
+                            } else {
+                                $("#user-list-more").html('点击加载更多')
+                            }
+                            currentPage = page['currentPage'] + 1
+                            p['data'].forEach(item => {
+                                drawUserItem(item)
+                            })
+                        }
+                    }
+                })
+            })
+            $("#user-list-more").click()
+        })
+
+        function searchUser() {
+            currentPage = 1
+            searchKey = $("#search-key").val()
+            $("#user-list").html('')
+            $("#user-list-more").click()
+        }
+
+        function deleteTask(id) {
+            if (confirm("你确定要删除这条打卡记录吗?")) {
+                net.delete({
+                    url: "/admin/da/delete/" + id,
+                    toast: true,
+                    reload: true
+                })
+            }
+        }
+    </script>
+</head>
+<body>
+
+<div th:replace="common/admin::navbar"></div>
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="common/admin::sidebarMenu"></div>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">帖子列表</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="form-check form-check-inline">
+                        <div class="font-weight-bold">打卡人：</div>
+                        <input style="cursor: pointer" class="form-control-sm" type="text" placeholder="单击选择打卡人"
+                               th:value="${username}" readonly onclick="selectUserId()" id="username">
+                        <input hidden id="userId" th:value="${userId}">
+                    </div>
+                    <!--                    <div class="form-check form-check-inline">-->
+                    <!--                        <div class="font-weight-bold">审核人：</div>-->
+                    <!--                        <input class="form-control-sm" type="number" placeholder="单击选择审核人"-->
+                    <!--                               th:value="${userId}" readonly onclick="selectReviewId()" id="reviewname">-->
+                    <!--                        <input hidden id="reviewId" th:value="${reviewId}">-->
+                    <!--                    </div>-->
+                    <select id="sort">
+                        <option value="">选择排序方式</option>
+                        <option value="desc">按时间降序</option>
+                        <option value="asc">按时间升序</option>
+                    </select>
+                    &nbsp;&nbsp;
+                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="query()">查询
+                    </button>
+                    &nbsp;&nbsp;
+                    <button type="button" class="btn btn-sm btn-outline-primary"
+                            onclick="window.location.href='/admin/da'">重置
+                    </button>
+                </div>
+            </div>
+            <table class="table table-striped table-hover">
+                <thead class="thead-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>状态</th>
+                    <th>打卡人</th>
+                    <th>审核人</th>
+                    <th>打卡描述</th>
+                    <th>审核描述</th>
+                    <th>打卡时间</th>
+                    <th>审核时间</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="task:${list}">
+                    <th th:text="${task.id}"></th>
+                    <td class="state text-primary" th:if="${task.state==0}">待审核</td>
+                    <td class="state text-success" th:if="${task.state==1}">打卡成功</td>
+                    <td class="state text-danger" th:if="${task.state==2}">打卡失败</td>
+                    <td><a th:href="'/space/posts/'+${task.userId}" th:text="${task.nickname}" target="_blank"></a></td>
+                    <td><a th:href="'/space/posts/'+${task.reviewId}" th:text="${task.reviewNickname}"
+                           target="_blank"></a></td>
+                    <td th:text="${task.des}"></td>
+                    <td th:text="${task.reviewMsg}"></td>
+                    <td th:text="${date_format.format(task.createTime,'yyyy/MM/dd HH:mm:ss')}"></td>
+                    <td th:if="${task.reviewTime>0}"
+                        th:text="${date_format.format(task.reviewTime,'yyyy/MM/dd HH:mm:ss')}"></td>
+                    <td th:if="${task.reviewTime==0}">暂未审核</td>
+                    <td>
+                        <a href="#" class="text-danger" th:onclick="'deleteTask('+${task.id}+')'">删除</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div style="margin-top: 8px">
+                <div th:replace="common/admin::page"></div>
+            </div>
+            <br><br><br>
+        </main>
+    </div>
+</div>
+</body>
+</html>
+<div class="modal fade" id="usersDlg" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">用户列表</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="max-height: 70vh;overflow: scroll">
+                <div style="display: flex;flex-direction: row;gap: 12px">
+                    <input class="form-control form-text" type="text" placeholder="请输入用户名或者昵称进行搜索" id="search-key">
+                    <button style="width:80px" type="button" class="btn btn-primary" onclick="searchUser()">搜索</button>
+                </div>
+                <div id="user-list"></div>
+                <div class="text-primary text-center" style="cursor: pointer" id="user-list-more">加载更多</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>

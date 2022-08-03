@@ -1,0 +1,219 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>戒烟网站</title>
+
+    <link rel="stylesheet" href="/webjars/bootstrap/4.5.0/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/user-home.css">
+
+    <script src="/webjars/jquery/3.5.1/jquery.js"></script>
+    <script src="/webjars/bootstrap/4.5.0/js/bootstrap.js"></script>
+    <script src="/js/net.js"></script>
+    <style>
+        body {
+            margin: 0;
+            background: #eeeeee;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+        }
+
+        main {
+            margin-top: 8px;
+            margin-bottom: 80px;
+            padding: 8px;
+            border-radius: 8px;
+            background: white;
+            width: 640px;
+        }
+
+        hr {
+            margin-top: 4px;
+            margin-bottom: 4px;
+        }
+
+        .item {
+            margin: 18px 24px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+
+        .lab {
+            width: 100px;
+            font-weight: bold;
+        }
+
+        .value-width {
+            flex-grow: 1;
+        }
+
+        #images {
+            margin-top: 8px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            justify-items: center;
+            row-gap: 8px;
+        }
+
+        .images-toolbar {
+            display: flex;
+            flex-direction: row;
+            margin-left: 28px;
+            margin-top: 16px;
+            align-items: center;
+            margin-bottom: 8px
+        }
+
+        .image {
+            border-radius: 4px;
+            border: solid 1px gray;
+            width: 200px;
+        }
+
+        .image > img {
+            width: 198px;
+            height: 198px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .image-dlt {
+            color: #d53232;
+            cursor: pointer;
+            text-align: center;
+            font-size: 14px;
+            line-height: 32px;
+        }
+    </style>
+    <script>
+        function deleteImage(btn) {
+            if (confirm("你确定要删除这张图片吗?")) {
+                var url = $(btn).parent().children(0).attr("src")
+                net.delete({
+                    url: url,
+                    toast: true,
+                    success: function () {
+                        $(btn).parent().remove();
+                    }
+                })
+            }
+        }
+
+        $(document).ready(function () {
+            $("#file").on("change", function () {
+                var form = new FormData();
+                form.append("file", document.getElementById("file").files[0], $("#file").val());
+
+                var settings = {
+                    "url": "/user/post/draft/image",
+                    "method": "POST",
+                    "dataType": "json",
+                    "timeout": 0,
+                    "processData": false,
+                    "mimeType": "multipart/form-data",
+                    "contentType": false,
+                    "data": form
+                };
+
+                $.ajax(settings).done(function (result) {
+                    if (result.success) {
+                        $("#images").append(`<div class="image">
+            <img src="${result.data}">
+            <div class="image-dlt" onclick="deleteImage(this)">删除</div>
+        </div>`);
+                    } else {
+                        alert(result.message);
+                    }
+                });
+            })
+        })
+
+        function saveDraft() {
+            net.post({
+                url: "/user/post/draft",
+                data: {
+                    title: $("#title").val(),
+                    content: $("#content").val()
+                },
+                toast: true,
+                success: function () {
+                    alert("保存成功")
+                }
+            })
+        }
+
+        function deleteDraft() {
+            if (confirm("你确定要删除草稿吗")) {
+                net.delete({
+                    url: "/user/post/draft",
+                    toast: true,
+                    reload: true,
+                    success: function () {
+                        alert("删除成功")
+                    }
+                })
+            }
+        }
+
+        function sendPost() {
+            net.post({
+                url: "/user/post/draft",
+                data: {
+                    title: $("#title").val(),
+                    content: $("#content").val()
+                },
+                toast: true,
+                success: function () {
+                    net.post({
+                        url: "/user/post/draft/submit",
+                        toast: true,
+                        success: function () {
+                            alert("发布成功")
+                            window.history.back()
+                        }
+                    })
+                }
+            })
+        }
+    </script>
+</head>
+<body>
+<main>
+    <div style="margin-top: 4px;padding: 8px">
+        <a href="/user/home">返回主页</a>
+        &nbsp;&nbsp;>&nbsp;
+        <span style="color: gray">发帖</span>
+    </div>
+    <hr/>
+    <div class="item">
+        <div class="lab">标题</div>
+        <input class="form-control value-width" type="text"
+               placeholder="给帖子取一个标题吧" id="title" th:value="${draft.title}">
+    </div>
+    <hr>
+    <div class="item">
+        <div class="lab">内容</div>
+        <textarea rows="8" class="form-control value-width" placeholder="帖子的内容"
+                  id="content" th:text="${draft.content}"></textarea>
+    </div>
+    <hr>
+    <div class="images-toolbar">
+        <div>图片</div>
+        <input hidden type="file" id="file" accept="image/*">
+        <button style="margin-left: 24px" onclick="$('#file').click()">添加</button>
+    </div>
+    <hr>
+    <div id="images">
+        <div class="image" th:each="url:${images.urls}">
+            <img th:src="${url}">
+            <div class="image-dlt" onclick="deleteImage(this)">删除</div>
+        </div>
+    </div>
+    <input style="margin-top: 8px" class="form-control btn-secondary" type="button" value="保存草稿" onclick="saveDraft()">
+    <input style="margin-top: 8px" class="form-control btn-danger" type="button" value="删除草稿" onclick="deleteDraft()">
+    <input style="margin-top: 8px" class="form-control btn-primary" type="button" value="立即发布" onclick="sendPost()">
+</main>
+</body>
+</html>

@@ -1,0 +1,757 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>戒烟网站</title>
+
+    <link rel="stylesheet" href="/webjars/bootstrap/4.5.0/css/bootstrap.css">
+
+    <script src="/webjars/jquery/3.5.1/jquery.js"></script>
+    <script src="/webjars/bootstrap/4.5.0/js/bootstrap.js"></script>
+    <script src="/js/net.js"></script>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #eeeeee;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        main {
+            margin-top: 8px;
+            margin-bottom: 188px;
+            border-radius: 8px;
+            width: 640px;
+            background: white;
+            padding: 24px;
+        }
+
+        /*mp*/
+        .mainpost {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .mainpost-head {
+            width: 64px;
+            height: 64px;
+            border-radius: 32px;
+            object-fit: cover;
+        }
+
+        .mainpost-right {
+            width: 100%;
+            margin-left: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mp-nickname {
+            margin-top: 8px;
+            font-size: 16px;
+            color: #393939;
+            font-weight: bold;
+        }
+
+        .mp-time {
+            font-size: 14px;
+            color: gray;
+            margin-top: 2px;
+        }
+
+        .mp-title {
+            margin-top: 12px;
+            font-size: 16px;
+            color: #393939;
+            font-weight: 600;
+        }
+
+        .mp-content {
+            margin-top: 12px;
+            font-size: 14px;
+            color: #393939;
+            line-height: 22px;
+        }
+
+        .mp-img-list {
+            display: flex;
+            flex-direction: row;
+            width: 480px;
+            margin-top: 12px;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .mp-img-item {
+            width: 114px;
+            height: 114px;
+            object-fit: cover;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .black {
+            width: 0;
+            height: 0;
+        }
+
+        .black-active {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: #39393999;
+            z-index: 9;
+        }
+
+        .mp-img-item-active {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: auto;
+            height: auto;
+            max-width: 98%;
+            max-height: 98%;
+            z-index: 10;
+            display: table-cell;
+            vertical-align: middle;
+            border-radius: 8px;
+        }
+
+        .mp-option {
+            margin-top: 12px;
+            display: flex;
+            flex-direction: row;
+            column-gap: 12px;
+            align-items: center;
+        }
+
+        /*mp-reply-layout*/
+        .mp-reply-layout-hide {
+            display: none;
+        }
+
+        .mp-reply-layout-show {
+            background: white;
+            width: 640px;
+            padding: 8px;
+            border-radius: 8px;
+            display: unset;
+            position: fixed;
+            bottom: 8px;
+            z-index: 8;
+        }
+
+        /*post*/
+        .post-item {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .post-item > hr {
+            margin-top: 8px;
+            margin-bottom: 8px;
+            width: 100%;
+        }
+
+        .post-item-head {
+            width: 54px;
+            height: 54px;
+            object-fit: cover;
+            border-radius: 27px;
+        }
+
+        .post-item-right {
+            width: 100%;
+            margin-left: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .post-item-nickname {
+            margin-top: 8px;
+            font-size: 14px;
+            color: #393939;
+            font-weight: bold;
+        }
+
+        .post-item-content {
+            margin-top: 4px;
+            font-size: 14px;
+            color: #393939;
+            line-height: 22px;
+        }
+
+        .post-item-images {
+            display: flex;
+            flex-direction: row;
+            width: 450px;
+            margin-top: 12px;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .post-item-images-item {
+            width: 106px;
+            height: 106px;
+            object-fit: cover;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .post-item-images-item-active {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: auto;
+            height: auto;
+            max-width: 98%;
+            max-height: 98%;
+            z-index: 10;
+            display: table-cell;
+            vertical-align: middle;
+            border-radius: 8px;
+        }
+
+        .post-item-option {
+            margin-top: 12px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            font-size: 14px;
+            column-gap: 24px;
+            color: gray;
+            line-height: 24px;
+        }
+
+        /*child-post-reply-layout*/
+        .reply-layout-hide {
+            display: none;
+        }
+
+        .reply-layout-show {
+            width: 100%;
+            padding: 8px;
+            border-radius: 8px;
+            display: unset;
+        }
+
+        .reply-content {
+            font-size: 14px;
+            flex-grow: 1;
+        }
+
+        .reply-list-div {
+            margin-top: 4px;
+            font-size: 14px;
+            color: gray;
+        }
+
+        /*reply*/
+        .reply-item {
+            margin-bottom: 32px;
+            display: flex;
+            flex-direction: row;
+            gap: 12px;
+        }
+
+        .reply-item-head {
+            object-fit: cover;
+            width: 24px;
+            height: 24px;
+            border-radius: 12px;
+        }
+
+        .reply-item-right {
+            width: 100%;
+            line-height: 24px;
+            font-size: 14px;
+            flex-grow: 1;
+        }
+
+        .reply-item-nickname {
+            font-weight: bold;
+        }
+
+        .reply-item-right > span {
+            margin-left: 12px;
+        }
+
+        .reply-item-option {
+            margin-top: 4px;
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+        }
+
+        .reply-item-time {
+            font-size: 13px;
+            color: gray;
+        }
+
+        .reply-item-reply-btn {
+            font-size: 13px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /*reply-reply-layout*/
+        .reply-item-reply-layout-hide {
+            display: none;
+        }
+
+        .reply-item-reply-layout-show {
+            margin-top: 8px;
+            display: flex;
+            flex-direction: row;
+            gap: 8px;
+        }
+
+        .reply-item-reply-content {
+            flex-grow: 1;
+        }
+    </style>
+    <script>
+        function like(id, obj) {
+            net.post({
+                url: "/user/like/mainpost",
+                data: {
+                    targetId: id
+                },
+                toast: true,
+                success: function (data) {
+                    $(obj).removeClass("btn-primary btn-outline-primary");
+                    if (data['like']) {
+                        $(obj).addClass("btn-primary");
+                        $(obj).html(`已点赞&nbsp;&nbsp;${data['count']}`);
+                    } else {
+                        $(obj).addClass("btn-outline-primary");
+                        $(obj).html(`点赞&nbsp;&nbsp;${data['count']}`);
+                    }
+                }
+            })
+        }
+
+        function likeChildPost(id, obj) {
+            net.post({
+                url: "/user/like/post",
+                data: {
+                    targetId: id
+                },
+                toast: true,
+                success: function (data) {
+                    $(obj).removeClass("text-primary");
+                    if (data['like']) {
+                        $(obj).addClass("text-primary");
+                        $(obj).html(`已点赞&nbsp;${data['count']}`);
+                    } else {
+                        $(obj).html(`点赞&nbsp;${data['count']}`);
+                    }
+                }
+            })
+        }
+
+        function goReply() {
+            $(".mp-reply-layout-hide").toggleClass("mp-reply-layout-show");
+        }
+
+        function goReplyChildPost(postId) {
+            $(`.post-item[postid=${postId}]`)
+                .find(".reply-layout-hide")
+                .toggleClass("reply-layout-show");
+        }
+
+        function goReplyReply(replyId) {
+            var $item = $(`.reply-item[replyid=${replyId}]`);
+            $item.find(".reply-item-reply-layout-hide").toggleClass("reply-item-reply-layout-show");
+        }
+
+        function addMpReplyImage() {
+            $("#mp-reply-images").parent().show();
+        }
+
+        function submitMpReply() {
+            var content = $("#mp-reply-content").val();
+            var mainPostId = [[${mp.id}]]
+            var files = document.getElementById("mp-reply-images").files
+            var form = new FormData();
+            form.append("mainPostId", mainPostId.toString())
+            form.append("content", content);
+            for (let i = 0; i < files.length; i++) {
+                form.append("file", files[i], files[i].name);
+            }
+            var settings = {
+                "url": "/user/mainpost/reply",
+                "method": "POST",
+                "dataType": "json",
+                "timeout": 0,
+                "processData": false,
+                "mimeType": "multipart/form-data",
+                "contentType": false,
+                "data": form
+            };
+
+            $.ajax(settings).done(function (result) {
+                if (result.success) {
+                    $("#mp-reply-images").val('');
+                    $("#mp-reply-content").val('');
+                    $(".mp-reply-layout-hide").removeClass("mp-reply-layout-show");
+                    drawPost(result['data']);
+                    net.get({
+                        url: "/mainpost/details/[[${mp.id}]]",
+                        success: function (mp) {
+                            $("#mp-reply-count").html(`共${mp['replyCount']}条回复`)
+                        }
+                    })
+                } else {
+                    alert(result.message);
+                }
+            });
+        }
+
+        function submitPostReply(postId) {
+            var $item = $(`.post-item[postid=${postId}]`);
+            var content = $item.find(".reply-content").val()
+            net.post({
+                url: "/user/post/reply",
+                data: {
+                    postId: postId,
+                    content: content
+                },
+                toast: true,
+                success: function (data) {
+                    $item.find(".reply-layout-hide").removeClass("reply-layout-show");
+                    $item.find(".reply-content").val('')
+                    net.get({
+                        url: "/post/details/" + postId,
+                        success: function (post) {
+                            $item.find(".reply-list-div").html(`共${post['replyCount']}条回复, <span style="cursor: pointer"
+class="text-primary" onclick="openRepliesDlg(${postId})">点击查看</span>`)
+                        }
+                    })
+                }
+            })
+        }
+
+        function submitReplyReply(replyId) {
+            var $item = $(`.reply-item[replyid=${replyId}]`);
+            var $content = $item.find(".reply-item-reply-content");
+            net.post({
+                url: "/user/reply/reply",
+                data: {
+                    replyId: replyId,
+                    content: $content.val(),
+                },
+                toast: true,
+                success: function (reply) {
+                    console.log(reply)
+                    drawReply(reply);
+                    $item.find(".reply-item-reply-layout-hide").removeClass("reply-item-reply-layout-show");
+                    $content.val('');
+                    net.get({
+                        url: "/post/details/" + reply['postId'],
+                        success: function (post) {
+                            var $item = $(`.post-item[postid=${post['id']}]`);
+                            $item.find(".reply-list-div").html(`共${post['replyCount']}条回复, <span style="cursor: pointer"
+class="text-primary" onclick="openRepliesDlg(${post['id']})">点击查看</span>`)
+                        }
+                    })
+                }
+            })
+        }
+
+        function deletePost(postId) {
+            if (confirm("你确定要删除这条回复帖吗?")) {
+                net.delete({
+                    url: "/user/post/delete/" + postId,
+                    toast: true,
+                    success: function () {
+                        $(`.post-item[postid=${postId}]`).remove()
+                    }
+                })
+            }
+        }
+
+        function deleteReply(replyId) {
+            if (confirm("你确定要删除这条评论吗?")) {
+                net.delete({
+                    url: "/user/reply/delete/" + replyId,
+                    toast: true,
+                    success: function () {
+                        $(`.reply-item[replyid=${replyId}]`).remove()
+                    }
+                })
+            }
+        }
+
+        function clickPostImage(img) {
+            $(img).toggleClass("post-item-images-item-active");
+            if ($(img).hasClass("post-item-images-item-active")) {
+                $(".black").addClass("black-active")
+            } else {
+                $(".black").removeClass("black-active")
+            }
+        }
+
+        function drawPost(item) {
+            function getImages(urls) {
+                var html = ``
+                urls.forEach(url => {
+                    html += `<img class="post-item-images-item" src="${url}" onclick="clickPostImage(this)">`;
+                })
+                return html;
+            }
+
+            function getImagesDiv(images) {
+                if (images.urls.length == 0) {
+                    return ``
+                } else {
+                    return `<div class="post-item-images">${getImages(images.urls)}</div>`
+                }
+            }
+
+            function getReplyDiv(postId, count) {
+                if (count > 0) {
+                    return `共${count}条回复, <span style="cursor: pointer"
+class="text-primary" onclick="openRepliesDlg(${postId})">点击查看</span>`
+                } else {
+                    return ``
+                }
+            }
+
+            function getDeleteBtn(item) {
+                if (item['me']) {
+                    return `<div style="cursor: pointer" class="text-danger" onclick="deletePost(${item['id']})">删除</div>`
+                } else {
+                    return ``
+                }
+            }
+
+            $(".postlist").append(`
+<hr>
+<div class="post-item" postid="${item['id']}">
+    <img class="post-item-head" src="/head/${item['userId']}"/>
+    <div class="post-item-right">
+        <a href="/space/posts/${item['userId']}" target="_blank">
+            <div class="post-item-nickname">${item['nickname']}</div>
+        </a>
+        <div class="post-item-content">${item['content']}</div>
+        ${getImagesDiv(item['images'])}
+        <div class="post-item-option">
+            <div class="post-item-time">${item['time']}</div>
+            <div style="cursor: pointer" class="${item['like'] ? 'text-primary' : ''}"
+                    onclick="likeChildPost(${item['id']},this)">
+                    ${item['like'] ? '已点赞' : '点赞'}&nbsp;${item['likeCount']}
+            </div>
+            <div style="cursor: pointer" class="text-primary" onclick="goReplyChildPost(${item['id']})">回复</div>
+            ${getDeleteBtn(item)}
+        </div>
+        <div class="reply-layout-hide">
+            <div style="display: flex;flex-direction: row;gap: 8px">
+                <textarea rows="2" placeholder="请输入回复内容" class="form-control reply-content"></textarea>
+                <button class="btn btn-primary btn-sm" onclick="submitPostReply(${item['id']})">发送</button>
+            </div>
+        </div>
+        <div class="reply-list-div">${getReplyDiv(item['id'], item['replyCount'])}</div>
+    </div>
+</div>`)
+        }
+
+        var postNextPage = 1
+
+        function drawPostList(p) {
+            var page = p['pager']
+            if (page['size'] == 0) {
+                $(".more-post").html("没有更多回帖了")
+            } else {
+                if (page['currentPage'] >= page['pageCount']) {
+                    $(".more-post").html("没有更多回帖了")
+                } else {
+                    $(".more-post").html("加载更多回帖")
+                }
+                postNextPage = page['currentPage'] + 1
+                p['data'].forEach(item => {
+                    drawPost(item)
+                })
+            }
+        }
+
+        var replyNextPage = 1
+
+        function drawReply(item) {
+            function getReplyToOthers(i) {
+                if (i['targetId'] != null) {
+                    return `<span>回复</span>
+<span class="reply-item-nickname"><a target="_blank" href="/space/posts/${i['targetId']}">${i['targetNickname']}</a>:</span>`
+                } else {
+                    return ``
+                }
+            }
+
+            function getDeleteBtn(i) {
+                if (i['me']) {
+                    return `<div class="reply-item-reply-btn text-danger" onclick="deleteReply(${item['id']})">删除</div>`
+                } else {
+                    return ''
+                }
+            }
+
+            $("#reply-list").append(`<div class="reply-item" replyid="${item['id']}">
+    <img class="reply-item-head" src="/head/${item['userId']}"/>
+    <div class="reply-item-right">
+        <a class="reply-item-nickname" target="_blank" href="/space/posts/${item['userId']}">${item['nickname']}</a>
+        ${getReplyToOthers(item)}
+        <span>${item['content']}</span>
+        <div class="reply-item-option">
+            <div class="reply-item-time">${item['time']}</div>
+            <div class="reply-item-reply-btn text-primary" onclick="goReplyReply(${item['id']})">回复</div>
+            ${getDeleteBtn(item)}
+        </div>
+        <div class="reply-item-reply-layout-hide">
+            <textarea rows="2" class="form-control reply-item-reply-content" placeholder="请输入回复内容"></textarea>
+            <button class="btn btn-primary reply-item-reply-send" onclick="submitReplyReply(${item['id']})">发送</button>
+        </div>
+    </div>
+</div>`);
+        }
+
+        function drawReplyList(p) {
+            var page = p['pager']
+            if (page['size'] == 0) {
+                $("#reply-list-more").html("没有更多回复了")
+            } else {
+                if (page['currentPage'] >= page['pageCount']) {
+                    $("#reply-list-more").html("没有更多回复了")
+                } else {
+                    $("#reply-list-more").html("加载更多回复")
+                }
+                replyNextPage = page['currentPage'] + 1
+                p['data'].forEach(item => {
+                    drawReply(item)
+                })
+            }
+        }
+
+        function openRepliesDlg(postId) {
+            $("#repliesDlg").modal("toggle");
+            $("#reply-list").html(``);
+            net.get({
+                url: "/reply/list/1?postId=" + postId,
+                toast: true,
+                success: function (p) {
+                    drawReplyList(p)
+                }
+            })
+            document.getElementById("reply-list-more").onclick = function () {
+                net.get({
+                    url: `/reply/list/${replyNextPage}?postId=${postId}`,
+                    toast: true,
+                    success: function (p) {
+                        drawReplyList(p)
+                    }
+                })
+            }
+        }
+
+        $(document).ready(function () {
+            $(".mp-img-item").on("click", function () {
+                $(this).toggleClass("mp-img-item-active");
+                if ($(this).hasClass("mp-img-item-active")) {
+                    $(".black").addClass("black-active")
+                } else {
+                    $(".black").removeClass("black-active")
+                }
+            })
+            $("#mp-reply-images").parent().hide();
+
+            net.get({
+                url: "/post/list/1?mainPostId=" + [[${mp.id}]],
+                toast: true,
+                success: function (p) {
+                    drawPostList(p)
+                }
+            })
+            $(".more-post").on("click", function () {
+                net.get({
+                    url: `/post/list/${postNextPage}?mainPostId=[[${mp.id}]]`,
+                    toast: true,
+                    success: function (p) {
+                        drawPostList(p)
+                    }
+                })
+            })
+        })
+    </script>
+</head>
+<body>
+<div class="black"></div>
+<main>
+    <div class="mainpost">
+        <img class="mainpost-head" th:src="'/head/'+${mp.userId}"/>
+        <div class="mainpost-right">
+            <a th:href="'/space/posts/'+${mp.userId}" target="_blank">
+                <div class="mp-nickname" th:text="${mp.nickname}"></div>
+            </a>
+            <div class="mp-time" th:text="${mp.time}"></div>
+            <div class="mp-title" th:text="${mp.title}"></div>
+            <div class="mp-content" th:text="${mp.content}"></div>
+            <div class="mp-img-list" th:if="${!mp.images.urls.isEmpty()}">
+                <img class="mp-img-item" th:each="url:${mp.images.urls}" th:src="${url}"/>
+            </div>
+            <div class="mp-option">
+                <button class="btn" th:classappend="${mp.like ? 'btn-primary' : 'btn-outline-primary'}"
+                        th:onclick="'like('+${mp.id}+',this)'">
+                    [[${mp.like ? '已点赞' : '点赞'}]]&nbsp;&nbsp;[[${mp.likeCount}]]
+                </button>
+                <div class="text-secondary" id="mp-reply-count">共[[${mp.replyCount}]]条回复</div>
+                <div style="flex-grow: 1"></div>
+                <div class="btn mp-reply-btn text-primary" onclick="goReply()">发表回帖</div>
+            </div>
+        </div>
+    </div>
+    <div class="postlist" style="margin-left: 24px;margin-right: 8px;margin-top: 24px;">
+    </div>
+    <div class="text-primary text-center" style="margin-top: 8px;cursor: pointer">
+        <div class="more-post">加载更多回帖</div>
+    </div>
+</main>
+
+<div class="mp-reply-layout-hide">
+    <div style="display: flex;flex-direction: row;gap: 8px">
+        <textarea rows="3" class="form-control" placeholder="我来说两句" id="mp-reply-content"></textarea>
+        <button class="btn btn-secondary" onclick="addMpReplyImage()">图片</button>
+        <button class="btn btn-primary" onclick="submitMpReply()">发表</button>
+    </div>
+    <div style="margin-top: 8px">
+        <input type="file" accept="image/*" multiple="multiple" id="mp-reply-images">
+        <div>按住Ctrl可以选择多张图片</div>
+    </div>
+</div>
+
+<div class="modal fade" id="repliesDlg" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">回复列表</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="max-height: 70vh;overflow: scroll">
+                <div id="reply-list"></div>
+                <div class="text-primary text-center" style="cursor: pointer" id="reply-list-more">加载更多</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

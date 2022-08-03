@@ -1,0 +1,172 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>戒烟网站</title>
+
+    <link rel="stylesheet" href="/webjars/bootstrap/4.5.0/css/bootstrap.css">
+
+    <script src="/webjars/jquery/3.5.1/jquery.js"></script>
+    <script src="/webjars/bootstrap/4.5.0/js/bootstrap.js"></script>
+    <script src="/js/net.js"></script>
+
+    <style>
+        body {
+            background: #eeeeee;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .navbar-layout {
+            position: fixed;
+            height: 48px;
+            width: 100%;
+            background: white;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .search-input {
+            width: 300px;
+        }
+
+        .fixed-layout {
+            width: [[${type=='post'?620:520}]]px;
+            min-height: 60vh;
+            background: white;
+            margin-top: 52px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-item {
+            margin: 12px 24px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-item-head {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 20px;
+            border: 1px solid gray;
+        }
+
+        .user-item-center {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            font-size: 14px;
+        }
+
+        .user-item-browse {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .post-item {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin: 12px 24px 0 24px;
+            border-bottom: 1px solid gray;
+            padding-bottom: 12px;
+        }
+
+        .post-item-left {
+            width: 0;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            gap: 4px;
+        }
+
+        .post-item-browse {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .post-item-title {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .post-item-time {
+            font-size: 14px;
+            color: gray;
+        }
+
+        .post-item-content {
+            font-size: 14px;
+            color: #393939;
+        }
+
+        .post-item-data-bar {
+            font-size: 14px;
+            color: gray;
+            display: flex;
+            flex-direction: row;
+            gap: 16px;
+        }
+    </style>
+    <script>
+        function query(type) {
+            $("#type").val(type)
+            $("#f").submit()
+        }
+    </script>
+</head>
+<body>
+<div class="navbar-layout">
+    <button class="btn text-primary" onclick="window.location.href='/user/home'">回到首页</button>
+    <div style="width: 60px;text-align: center">|</div>
+    <button class="btn" onclick="query('post')" th:classappend="${type=='post'?'text-primary':''}">帖子</button>
+    <button class="btn" onclick="query('user')" th:classappend="${type=='user'?'text-primary':''}">用户</button>
+    <form style="display: flex;flex-direction: row;margin-right: 8px;margin-left: 8px" id="f">
+        <input class="form-control search-input" placeholder="请输入搜索关键字" th:value="${w}" name="w">
+        <input hidden id="type" th:value="${type}" name="type">
+        <button type="submit">搜索</button>
+    </form>
+</div>
+<hr style="margin-top: 48px;color: black;margin-bottom: 0;width: 100%;position: fixed">
+<div class="fixed-layout">
+    <div class="user-item" th:if="${users!=null}" th:each="user:${users}">
+        <img class="user-item-head" th:src="'/head/'+${user.id}"/>
+        <div class="user-item-center">
+            <div th:text="${user.username}"></div>
+            <div th:text="${user.nickname}"></div>
+        </div>
+        <a th:href="'/space/posts/'+${user.id}" target="_blank">
+            <div class="user-item-browse">查看</div>
+        </a>
+    </div>
+    <div class="post-item" th:if="${posts!=null}" th:each="post:${posts}">
+        <div class="post-item-left">
+            <div class="post-item-title text-truncate" th:text="${post.title}"></div>
+            <div class="post-item-time" th:text="${post.time}"></div>
+            <div class="post-item-content text-truncate" th:text="${post.content}"></div>
+            <div class="post-item-data-bar">
+                <div>点赞: [[${post.likeCount}]]</div>
+                <div>回帖: [[${post.replyCount}]]</div>
+                <div>图片: [[${post.images.urls.size()}]]</div>
+                <div>
+                    楼主: <a th:href="'/space/posts/'+${post.userId}" th:text="${post.nickname}" target="_blank"></a>
+                </div>
+            </div>
+        </div>
+        <a th:href="'/mainpost/details/view/'+${post.id}" target="_blank">
+            <div class="post-item-browse">查看</div>
+        </a>
+    </div>
+</div>
+</body>
+</html>

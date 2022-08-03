@@ -1,0 +1,205 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>戒烟网站</title>
+
+    <link rel="stylesheet" href="/webjars/bootstrap/4.5.0/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/user-home.css">
+    <link rel="stylesheet" href="/css/posts-item.css">
+
+    <script src="/webjars/jquery/3.5.1/jquery.js"></script>
+    <script src="/webjars/bootstrap/4.5.0/js/bootstrap.js"></script>
+    <script src="/js/net.js"></script>
+    <script src="/js/posts-item.js"></script>
+
+    <style>
+        .search-input {
+            width: 300px;
+        }
+
+        .post-list-more {
+            cursor: pointer;
+            color: #007bff;
+            line-height: 32px;
+            text-align: center;
+            margin-top: 12px;
+            margin-bottom: 32px;
+        }
+
+        .my-task-item {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .task-time {
+            width: 60px;
+            text-align: center;
+            font-size: 18px;
+            font-style: italic;
+            background-color: #FFF;
+            color: #106292
+        }
+
+        .review-task-item {
+            margin-top: 8px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .review-task-head {
+            width: 32px;
+            height: 32px;
+            border-radius: 16px;
+            object-fit: cover;
+            border: solid 1px gray;
+        }
+
+        .review-task-nickname {
+            font-size: 14px;
+            flex-grow: 1;
+        }
+
+        .review-task-view {
+            font-size: 14px;
+            width: 52px;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+    <script>
+        function logout() {
+            if (confirm("你确定要退出登录？")) {
+                net.post({
+                    url: "/user/logout",
+                    reload: true
+                })
+            }
+        }
+
+        $(document).ready(function () {
+            $(".post-list-more").on("click", function () {
+                net.get({
+                    url: "/user/space/follow/mainpost/list/" + nextPage,
+                    success: function (p) {
+                        drawMainPostList(p)
+                    }
+                })
+            });
+            $(".post-list-more").click();
+        })
+    </script>
+</head>
+<body>
+<div class="navbar-layout">
+    <button class="btn" onclick="window.location.href='/user/home'"
+            th:classappend="${route=='home'?'text-primary':''}">首页
+    </button>
+    <button class="btn" onclick="window.location.href='/user/space/posts-followed'"
+            th:classappend="${route=='space'?'text-primary':''}">动态
+    </button>
+    <form style="display: flex;flex-direction: row;margin-right: 8px;margin-left: 8px" action="/search">
+        <input class="form-control search-input" placeholder="请输入搜索关键字" name="w">
+        <button type="submit">搜索</button>
+    </form>
+    <a class="btn text-primary" href="/user/post">发帖</a>
+    <a class="btn text-primary" href="/user/da/submit/view">戒烟打卡</a>
+    <button class="btn text-danger" onclick="logout()">退出登录</button>
+</div>
+<div class="fixed-layout">
+    <div class="user-info-layout">
+        <div style="text-align: center;margin-top: 8px" th:if="${user==null}">
+            <h5>用户未登录</h5>
+            <a style="line-height: 32px" href="/user/login">去登陆</a>
+        </div>
+        <div th:if="${user!=null}">
+            <a href="/user/info">
+                <div class="user-head-layout">
+                    <img class="user-head-img" src="/userhead">
+                    <div>
+                        <div class="user-username text-truncate">[[${user.username}]]</div>
+                        <div class="user-nickname text-truncate" th:text="${user.nickname}"></div>
+                    </div>
+                </div>
+            </a>
+            <div class="user-data-layout">
+                <div class="user-data-child">
+                    <a href="/user/space/follow">
+                        <div class="user-data-child-value" th:text="${follow_count}"></div>
+                    </a>
+                    <div class="user-data-child-lab">关注</div>
+                </div>
+                <div class="user-data-child">
+                    <a href="/user/space/follower">
+                        <div class="user-data-child-value" th:text="${follower_count}"></div>
+                    </a>
+                    <div class="user-data-child-lab">粉丝</div>
+                </div>
+                <div class="user-data-child">
+                    <a href="/user/space/posts">
+                        <div class="user-data-child-value" th:text="${post_count}"></div>
+                    </a>
+                    <div class="user-data-child-lab">帖子</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="width: 640px;"></div>
+    <div class="notice-list-layout">
+        <div>
+            <span class="font-weight-bold notice-btn notice-btn-active" type="top">我的打卡</span>
+            <span class="font-weight-bold">&nbsp;&nbsp;|&nbsp;&nbsp;</span>
+            <span class="font-weight-bold notice-btn" type="news">等待我审核的打卡</span>
+        </div>
+        <hr style="margin-top: 8px;margin-bottom: 4px">
+        <div id="notice-list-top">
+            <!--/*@thymesVar id="task" type="com.hql.scm.model.result.TaskResult"*/-->
+            <div class="my-task-item" th:each="task:${my_task_list}">
+                <div class="task-time" th:text="${date_format.format(task.createTime,'MM-dd')}"></div>
+                <div class="task-state text-primary" th:if="${task.state==0}">待审核</div>
+                <div class="task-state text-success" th:if="${task.state==1}">打卡成功</div>
+                <div class="task-state text-danger" th:if="${task.state==2}">打卡失败</div>
+                <a th:href="'/user/da/task/view/'+${task.id}" target="_blank">查看详情</a>
+            </div>
+            <hr style="margin-top: 8px;margin-bottom: 8px">
+            <a style="font-size: 15px" href="/user/da/view/task/list/1">点击查看所有我的打卡>></a>
+        </div>
+        <div id="notice-list-news" style="display: none">
+            <!--/*@thymesVar id="task" type="com.hql.scm.model.result.TaskResult"*/-->
+            <div class="review-task-item" th:each="task:${review_task_list}">
+                <div class="task-time" th:text="${date_format.format(task.createTime,'MM-dd')}"></div>
+                <img class="review-task-head" th:src="'/head/'+${task.userId}"/>
+                <div class="review-task-nickname" th:text="${task.nickname}"></div>
+                <a class="review-task-view text-primary" th:href="'/user/da/review/view/'+${task.id}" target="_blank">查看</a>
+            </div>
+            <hr style="margin-top: 8px;margin-bottom: 8px">
+            <a style="font-size: 15px" href="/user/da/view/review/list/1">点击查看所有我审核的打卡>></a>
+        </div>
+    </div>
+</div>
+<div class="post-list-layout-parent">
+    <div class="post-list-layout"></div>
+    <div class="post-list-more"></div>
+</div>
+</body>
+</html>
+
+<script>
+    $(".notice-btn").mouseover(function () {
+        $(".notice-btn").removeClass("notice-btn-active");
+        $(this).addClass("notice-btn-active");
+        var type = $(this).attr("type");
+        if (type == "top") {
+            $("#notice-list-top").show();
+            $("#notice-list-news").hide();
+        } else if (type == "news") {
+            $("#notice-list-top").hide();
+            $("#notice-list-news").show();
+        }
+    })
+</script>

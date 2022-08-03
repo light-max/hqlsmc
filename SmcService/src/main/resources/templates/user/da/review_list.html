@@ -1,0 +1,102 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>戒烟网站</title>
+
+    <link rel="stylesheet" href="/webjars/bootstrap/4.5.0/css/bootstrap.css">
+
+    <script src="/webjars/jquery/3.5.1/jquery.js"></script>
+    <!--    <script src="/webjars/bootstrap/4.5.0/js/bootstrap.js"></script>-->
+    <script src="/js/net.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            background: #eeeeee;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+        }
+
+        main {
+            width: 560px;
+            background: white;
+            padding: 12px;
+            margin: 8px;
+            border-radius: 8px;
+        }
+
+        .item {
+            line-height: 40px;
+            display: flex;
+            flex-direction: row;
+        }
+
+        .head {
+            width: 32px;
+            height: 32px;
+            border-radius: 16px;
+            border: solid 1px gray;
+            object-fit: cover;
+            margin-left: 24px;
+            margin-right: 8px;
+        }
+
+        .date {
+            width: 120px;
+            text-align: center;
+            font-size: 18px;
+            font-style: italic;
+            background-color: #FFF;
+            color: #106292
+        }
+
+        .state {
+            font-size: 16px;
+            font-weight: bold;
+            width: 80px;
+            text-align: center;
+        }
+
+        .time {
+            font-size: 16px;
+            color: gray;
+            width: 120px;
+        }
+
+        .link {
+            width: 120px;
+            text-align: center;
+        }
+    </style>
+
+    <script>
+    </script>
+</head>
+<body>
+<main>
+    <div style="margin-top: 4px">
+        <a href="/user/space/posts-followed">返回动态</a>
+        &nbsp;&nbsp;>&nbsp;
+        <span style="color: gray">我的审核</span>
+    </div>
+    <hr style="margin-top: 8px;margin-bottom: 8px;">
+    <div th:each="task:${list}" class="item">
+        <a th:href="'/space/posts/'+${task.userId}" target="_blank">
+            <img class="head" th:src="'/head/'+${task.userId}"/>
+        </a>
+        <div class="date" th:text="${date_format.format(task.createTime,'yyyy-MM-dd')}"></div>
+        <div class="state text-primary" th:if="${task.state==0}">待审核</div>
+        <div class="state text-success" th:if="${task.state==1}">打卡成功</div>
+        <div class="state text-danger" th:if="${task.state==2}">打卡失败</div>
+        <div class="time" th:text="${date_format.format(task.createTime,'hh:mm')}"></div>
+        <div style="flex-grow: 1"></div>
+        <a class="link" th:href="'/user/da/review/view/'+${task.id}" target="_blank">查看详情</a>
+    </div>
+    <div style="margin-top: 8px;display:flex;justify-content: center">
+        <div th:replace="common/admin::page"></div>
+    </div>
+</main>
+</body>
+</html>

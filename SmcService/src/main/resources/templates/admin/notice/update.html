@@ -1,0 +1,169 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>戒烟网站后台管理系统</title>
+
+    <link rel="stylesheet" href="/webjars/bootstrap/4.5.0/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/admin.css">
+
+    <script src="/webjars/jquery/3.5.1/jquery.js"></script>
+    <script src="/webjars/bootstrap/4.5.0/js/bootstrap.js"></script>
+    <script src="/js/net.js"></script>
+
+    <style>
+        .left {
+            width: 100%;
+        }
+
+        .right {
+            width: 100%;
+        }
+
+        .images {
+            width: 600px;
+            max-height: 50vh;
+            overflow: scroll;
+        }
+
+        .item {
+            margin-top: 8px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            border: gray solid 1px;
+            box-sizing: border-box;
+        }
+
+        .image {
+            width: 100%;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .delete {
+            text-align: center;
+            line-height: 32px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+
+    <script>
+        function post() {
+            net.post({
+                url: "/admin/notice/update/" + $("#id").val(),
+                data: {
+                    title: $("#title").val(),
+                    des: $("#des").val(),
+                    top: $("#top").prop("checked")
+                },
+                toast: true,
+                reload: true,
+                success: function () {
+                    alert("更新成功")
+                }
+            })
+        }
+
+        function selectImage() {
+            var f = $("#file");
+            f.click()
+        }
+
+        function deleteImage(url) {
+            if (confirm("你确定要删除这张图片?")) {
+                net.delete({
+                    url: url,
+                    reload: true,
+                    toast: true
+                })
+            }
+        }
+
+        $(document).ready(function () {
+            net.get({
+                url: "/notice/images/" + $("#id").val(),
+                success: function (images) {
+                    images['urls'].forEach(function (url) {
+                        $(".images").append(`<div class="item">
+    <img class="image" src="${url}">
+    <div class="delete" onclick="deleteImage('${url}')">删除</div>
+</div>`)
+                    })
+                }
+            })
+
+            $("#file").on("change", function () {
+                var form = new FormData();
+                form.append("file", document.getElementById("file").files[0], $("#file").val());
+
+                var settings = {
+                    "url": "/admin/notice/image/" + $("#id").val(),
+                    "method": "POST",
+                    "dataType": "json",
+                    "timeout": 0,
+                    "processData": false,
+                    "mimeType": "multipart/form-data",
+                    "contentType": false,
+                    "data": form
+                };
+
+                $.ajax(settings).done(function (result) {
+                    if (result.success) {
+                        // alert("添加成功")
+                        window.location.reload();
+                    } else {
+                        alert(result.message);
+                    }
+                });
+            });
+        })
+    </script>
+</head>
+<body>
+
+<div th:replace="common/admin::navbar"></div>
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="common/admin::sidebarMenu"></div>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">修改公告</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                </div>
+            </div>
+            <div style="display: flex;gap: 24px">
+                <div class="left">
+                    <div class="form-group">
+                        <label for="id">公告ID</label>
+                        <input type="text" class="form-control" id="id" readonly th:value="${notice.id}">
+                    </div>
+                    <div class="form-group">
+                        <label for="title">公告标题</label>
+                        <input type="text" class="form-control" id="title" placeholder="请输入公告标题"
+                               th:value="${notice.title}">
+                    </div>
+                    <div class="form-group">
+                        <label for="des">公告内容</label>
+                        <textarea rows="6" type="text" class="form-control" id="des"
+                                  placeholder="请输入公告内容，1000字以内" th:text="${notice.des}"></textarea>
+                    </div>
+                    <div class="form-group form-check">
+                        <input type="checkbox" class="form-check-input" id="top" th:checked="${notice.grade>0}">
+                        <label class="form-check-label" for="top">公告置顶</label>
+                    </div>
+                    <button class="form-control btn btn-primary" onclick="post()">保存更改</button>
+                </div>
+                <div class="right">
+                    <div class="font-weight-bold">公告图片</div>
+                    <div class="images"></div>
+                    <button class="btn btn-primary" onclick="selectImage()">添加图片</button>
+                    <input hidden type="file" id="file" accept="image/* ">
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+</body>
+</html>
