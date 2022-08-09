@@ -3,7 +3,6 @@ package com.hql.smc.ui.register;
 import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
@@ -14,10 +13,8 @@ import com.hql.smc.base.mvp.BaseView;
 
 public class RegisterView extends BaseView<RegisterActivity> {
     private EditText username;
-    private EditText name;
     private EditText password;
     private EditText password1;
-    private Spinner role;
     private TextView post;
     private AlertDialog dialog;
 
@@ -26,19 +23,13 @@ public class RegisterView extends BaseView<RegisterActivity> {
         super.onCreate(base, savedInstanceState);
         click(R.id.back, () -> base.getActivity().finish());
         username = get(R.id.username);
-        name = get(R.id.name);
         password = get(R.id.password);
         password1 = get(R.id.password1);
-        role = get(R.id.role);
         post = get(R.id.post);
     }
 
     public String getUsername() {
         return username.getText().toString();
-    }
-
-    public String getName() {
-        return name.getText().toString();
     }
 
     public String getPassword() {
@@ -49,10 +40,6 @@ public class RegisterView extends BaseView<RegisterActivity> {
         return password1.getText().toString();
     }
 
-    public boolean isStudent() {
-        return role.getSelectedItemPosition() == 0;
-    }
-
     public TextView getPost() {
         return post;
     }
@@ -61,7 +48,7 @@ public class RegisterView extends BaseView<RegisterActivity> {
         ProgressBar progressBar = new ProgressBar(base.getContext());
         dialog = new AlertDialog.Builder(base.getContext())
                 .setCancelable(false)
-                .setMessage("登录中...")
+                .setMessage("注册...")
                 .setView(progressBar)
                 .show();
     }

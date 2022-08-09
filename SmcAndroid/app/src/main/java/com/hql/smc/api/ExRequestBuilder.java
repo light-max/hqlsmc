@@ -2,6 +2,7 @@ package com.hql.smc.api;
 
 import com.hql.smc.async.Async;
 import com.hql.smc.async.AsyncTaskError;
+import com.hql.smc.data.PagerData;
 import com.hql.smc.data.Res;
 import com.hql.smc.net.ResultError;
 import com.hql.smc.net.request.Method;
@@ -51,6 +52,23 @@ public class ExRequestBuilder extends RequestBuilder {
             ResultError error = result.error();
             if (error == null) {
                 ResultType rt = ResultType.create(type);
+                Res<T> res = result.json(rt);
+                if (res.isSuccess()) {
+                    return res.getData();
+                } else {
+                    return new AsyncTaskError(res.getMessage(), null);
+                }
+            }
+            return new AsyncTaskError(error.getMessage(), error.getException());
+        });
+    }
+
+    public <T> Async.Builder<PagerData<T>> asyncPager(Class<T> type){
+        return Async.<PagerData<T>>builder().task(()->{
+            Result result = execute();
+            ResultError error = result.error();
+            if (error == null) {
+                ResultType rt = ResultType.pager(type);
                 Res<T> res = result.json(rt);
                 if (res.isSuccess()) {
                     return res.getData();

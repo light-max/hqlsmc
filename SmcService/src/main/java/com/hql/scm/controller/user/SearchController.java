@@ -29,12 +29,10 @@ public class SearchController {
         if ("post".equals(type)) {
             List<MainPostResult> list = postQueryController.queryMainPost(w).getData();
             model.addAttribute("posts", list);
-            System.out.println(list);
         }
         if ("user".equals(type)) {
             List<User> list = userController.query(w).getData();
             model.addAttribute("users", list);
-            System.out.println(list);
         }
         model.addAttribute("w", w);
         model.addAttribute("type", type);

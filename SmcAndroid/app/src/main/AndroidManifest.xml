@@ -30,6 +30,20 @@
             android:name=".ui.register.RegisterActivity"
             android:launchMode="singleTask"
             android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity android:name=".ui.home.HomeActivity" />
+        <activity android:name=".ui.mainpost.MainpostActivity" />
+        <activity android:name=".ui.space.SpaceActivity" />
+        <activity android:name=".ui.search.SearchActivity" />
+        <activity android:name=".ui.notice.NoticeActivity" />
+        <activity android:name=".ui.createpost.CreatePostActivity" />
+        <activity android:name=".ui.createda.CreateDaActivity" />
+        <activity android:name=".ui.useinfo.PasswordSetActivity" />
+        <activity android:name=".ui.useinfo.UserInfoSetActivity" />
+        <activity android:name=".ui.postmanager.PostManagerActivity" />
+        <activity android:name=".ui.da.list.DaListActivity" />
+        <activity android:name=".ui.da.details.DaDetailsActivity" />
+        <activity android:name=".ui.review.list.ReviewListActivity" />
+        <activity android:name=".ui.review.details.ReviewDetailsActivity" />
     </application>
 
 </manifest>

@@ -74,6 +74,12 @@ public class DailyAttendanceController {
         return Result.pager(pager, list);
     }
 
+    @GetMapping("/da/task/details/{id}")
+    @ResponseBody
+    public Result<TaskResult> getDetails(@PathVariable Integer id) {
+        return Result.success(get(service.getById(id)));
+    }
+
     @GetMapping("/user/da/task/view/{id}")
     public String getTaskDetailsView(@PathVariable Integer id, Model model) {
         model.addAttribute("task", get(service.getById(id)));

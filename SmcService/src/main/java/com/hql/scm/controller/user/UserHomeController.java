@@ -2,8 +2,10 @@ package com.hql.scm.controller.user;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hql.scm.model.data.PagerData;
+import com.hql.scm.model.data.Result;
 import com.hql.scm.model.entity.Notice;
 import com.hql.scm.model.entity.User;
+import com.hql.scm.model.result.SpaceValueNumbers;
 import com.hql.scm.model.td.HomeNoticeTD;
 import com.hql.scm.service.FollowService;
 import com.hql.scm.service.NoticeService;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttribute;
 
 import javax.annotation.Resource;
@@ -92,6 +95,19 @@ public class UserHomeController {
     ) {
         getUInfoData(model, session, id);
         return "/public/space/posts";
+    }
+
+    @GetMapping("/space/value/numbers")
+    @ResponseBody
+    public Result<SpaceValueNumbers> getValueNumbers(Integer userId){
+        int postCount = postService.getMainPostCount(userId);
+        int followCount = followService.getFollowCount(userId);
+        int followerCount = followService.getFollowerCount(userId);
+        return Result.success(SpaceValueNumbers.builder()
+                .postCount(postCount)
+                .followCount(followCount)
+                .followerCount(followerCount)
+                .build());
     }
 
     private void getUInfoData(Model model, HttpSession session, @Nullable Integer id) {

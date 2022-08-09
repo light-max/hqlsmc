@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
@@ -20,7 +19,6 @@ public class LoginView extends BaseView<LoginActivity> {
     private CheckBox remember;
     private CheckBox auto;
     private TextView post;
-    private Spinner role;
     private AlertDialog dialog;
     private TextView register;
 
@@ -32,7 +30,6 @@ public class LoginView extends BaseView<LoginActivity> {
         remember = get(R.id.remember);
         auto = get(R.id.auto);
         post = get(R.id.post);
-        role = get(R.id.role);
         register = get(R.id.register);
 
         SharedPreferences sp = this.base.getPreferences(0);
@@ -40,7 +37,6 @@ public class LoginView extends BaseView<LoginActivity> {
             remember.setChecked(true);
             username.setText(sp.getString("username", ""));
             password.setText(sp.getString("password", ""));
-            role.setSelection(sp.getInt("role", 0));
             auto.setChecked(sp.getBoolean("auto", false));
         }
 
@@ -88,10 +84,6 @@ public class LoginView extends BaseView<LoginActivity> {
         return register;
     }
 
-    public boolean isStudent() {
-        return role.getSelectedItemPosition() == 0;
-    }
-
     public boolean isAuto() {
         return auto.isChecked();
     }
@@ -106,7 +98,6 @@ public class LoginView extends BaseView<LoginActivity> {
                 .putBoolean("remember", isRemember())
                 .putString("username", getUsername())
                 .putString("password", getPassword())
-                .putInt("role", isStudent() ? 0 : 1)
                 .apply();
     }
 }

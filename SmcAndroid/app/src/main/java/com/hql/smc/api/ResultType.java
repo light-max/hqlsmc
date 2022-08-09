@@ -1,5 +1,6 @@
 package com.hql.smc.api;
 
+import com.hql.smc.data.PagerData;
 import com.hql.smc.data.Res;
 
 import org.jetbrains.annotations.NotNull;
@@ -30,6 +31,11 @@ class ResultType implements ParameterizedType {
     static ResultType list(Class<?> type) {
         Type listType = new ResultType(List.class, new Class<?>[]{type});
         return new ResultType(Res.class, new Type[]{listType});
+    }
+
+    static ResultType pager(Class<?> type) {
+        Type pagerType = new ResultType(PagerData.class, new Class<?>[]{type});
+        return new ResultType(Res.class, new Type[]{pagerType});
     }
 
     @NotNull

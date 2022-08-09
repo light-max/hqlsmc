@@ -3,6 +3,7 @@ package com.hql.scm.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hql.scm.constant.GlobalConstant;
 import com.hql.scm.model.data.Pager;
+import com.hql.scm.model.data.PagerData;
 import com.hql.scm.model.data.Result;
 import com.hql.scm.model.entity.Notice;
 import com.hql.scm.model.result.Images;
@@ -53,6 +54,15 @@ public class NoticeController {
         model.addAttribute("list", tds);
         model.addAttribute("pager", pager);
         return "/public/notice/list";
+    }
+
+    @GetMapping("/api/notice/list/{n}")
+    @ResponseBody
+    public Result<PagerData> list(@PathVariable Integer n) {
+        Page<Notice> page = service.list(n);
+        Pager pager = new Pager(page, "/notice/list");
+        List<Notice> list = page.getRecords();
+        return Result.pager(pager, list);
     }
 
     @GetMapping("/admin/notice/add")

@@ -19,9 +19,8 @@ public class RegisterActivity extends BaseActivity<RegisterModel, RegisterView> 
         hideActionBar();
         view.getPost().setOnClickListener(v -> {
             if (view.getPassword().equals(view.getPassword1())) {
-                model.login(view.isStudent(),
+                model.register(
                         view.getUsername(),
-                        view.getName(),
                         view.getPassword()
                 );
             } else {

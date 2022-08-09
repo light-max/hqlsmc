@@ -22,7 +22,7 @@ public class LoginActivity extends BaseActivity<LoginModel, LoginView> {
         hideActionBar();
         hideStatusBar();
         view.getPost().setOnClickListener(v -> {
-            model.login(view.isStudent(), view.getUsername(), view.getPassword());
+            model.login(view.getUsername(), view.getPassword());
         });
         view.getRegister().setOnClickListener(v -> {
             open(RegisterActivity.class);

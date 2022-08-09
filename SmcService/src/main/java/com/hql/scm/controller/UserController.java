@@ -50,7 +50,7 @@ public class UserController {
         return "/admin/user/list";
     }
 
-    @GetMapping("/admin/user/get/{id}")
+    @GetMapping({"/admin/user/get/{id}", "/user/details/{id}"})
     @ResponseBody
     public Result<User> getUser(@PathVariable Integer id) {
         User user = service.getById(id);

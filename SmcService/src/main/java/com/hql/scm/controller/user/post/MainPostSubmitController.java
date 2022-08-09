@@ -115,7 +115,7 @@ public class MainPostSubmitController {
         return Result.success("/user/post/draft/image/" + path.getName());
     }
 
-    @GetMapping("/user/post/draft/image/{index}")
+    @GetMapping(value = "/user/post/draft/image/{index}", produces = "image/jpeg")
     @ResponseBody
     public ResponseEntity<FileSystemResource> getImage(
             @SessionAttribute("user") User user,

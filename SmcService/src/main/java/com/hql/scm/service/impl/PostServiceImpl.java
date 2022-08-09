@@ -89,7 +89,7 @@ public class PostServiceImpl implements PostService {
     public MainPost addMainPost(int userId) {
         PostDraft draft = getDraftNotNull(userId);
         MainPost mainPost = MainPost.builder()
-                .title(draft.getTitle())
+                .title(draft.getTitle().trim())
                 .content(draft.getContent())
                 .userId(draft.getUserId())
                 .build();

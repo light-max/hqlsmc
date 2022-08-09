@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public abstract class PagerData<T> {
+public class PagerData<T> {
     private Pager pager;
 
     @SerializedName("data")
